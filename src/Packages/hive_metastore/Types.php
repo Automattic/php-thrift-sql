@@ -16,6 +16,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+/*
 final class HiveObjectType {
   const GLOBAL = 1;
   const DATABASE = 2;
@@ -30,6 +31,7 @@ final class HiveObjectType {
     5 => 'COLUMN',
   );
 }
+*/
 
 final class PrincipalType {
   const USER = 1;
