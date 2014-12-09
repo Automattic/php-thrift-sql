@@ -8112,7 +8112,7 @@ class ResourceUri {
 
 }
 
-class Function {
+class HiveFunction {
   static $_TSPEC;
 
   /**

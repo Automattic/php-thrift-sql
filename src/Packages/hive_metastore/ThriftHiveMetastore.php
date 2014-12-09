@@ -670,13 +670,13 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf {
    */
   public function delete_table_column_statistics($db_name, $tbl_name, $col_name);
   /**
-   * @param \metastore\Function $func
+   * @param \metastore\HiveFunction $func
    * @throws \metastore\AlreadyExistsException
    * @throws \metastore\InvalidObjectException
    * @throws \metastore\MetaException
    * @throws \metastore\NoSuchObjectException
    */
-  public function create_function(\metastore\Function $func);
+  public function create_function(\metastore\HiveFunction $func);
   /**
    * @param string $dbName
    * @param string $funcName
@@ -687,11 +687,11 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf {
   /**
    * @param string $dbName
    * @param string $funcName
-   * @param \metastore\Function $newFunc
+   * @param \metastore\HiveFunction $newFunc
    * @throws \metastore\InvalidOperationException
    * @throws \metastore\MetaException
    */
-  public function alter_function($dbName, $funcName, \metastore\Function $newFunc);
+  public function alter_function($dbName, $funcName, \metastore\HiveFunction $newFunc);
   /**
    * @param string $dbName
    * @param string $pattern
@@ -702,7 +702,7 @@ interface ThriftHiveMetastoreIf extends \FacebookServiceIf {
   /**
    * @param string $dbName
    * @param string $funcName
-   * @return \metastore\Function
+   * @return \metastore\HiveFunction
    * @throws \metastore\MetaException
    * @throws \metastore\NoSuchObjectException
    */
@@ -5224,13 +5224,13 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
     throw new \Exception("delete_table_column_statistics failed: unknown result");
   }
 
-  public function create_function(\metastore\Function $func)
+  public function create_function(\metastore\HiveFunction $func)
   {
     $this->send_create_function($func);
     $this->recv_create_function();
   }
 
-  public function send_create_function(\metastore\Function $func)
+  public function send_create_function(\metastore\HiveFunction $func)
   {
     $args = new \metastore\ThriftHiveMetastore_create_function_args();
     $args->func = $func;
@@ -5339,13 +5339,13 @@ class ThriftHiveMetastoreClient extends \FacebookServiceClient implements \metas
     return;
   }
 
-  public function alter_function($dbName, $funcName, \metastore\Function $newFunc)
+  public function alter_function($dbName, $funcName, \metastore\HiveFunction $newFunc)
   {
     $this->send_alter_function($dbName, $funcName, $newFunc);
     $this->recv_alter_function();
   }
 
-  public function send_alter_function($dbName, $funcName, \metastore\Function $newFunc)
+  public function send_alter_function($dbName, $funcName, \metastore\HiveFunction $newFunc)
   {
     $args = new \metastore\ThriftHiveMetastore_alter_function_args();
     $args->dbName = $dbName;
@@ -26332,7 +26332,7 @@ class ThriftHiveMetastore_create_function_args {
   static $_TSPEC;
 
   /**
-   * @var \metastore\Function
+   * @var \metastore\HiveFunction
    */
   public $func = null;
 
@@ -26342,7 +26342,7 @@ class ThriftHiveMetastore_create_function_args {
         1 => array(
           'var' => 'func',
           'type' => TType::STRUCT,
-          'class' => '\metastore\Function',
+          'class' => '\metastore\HiveFunction',
           ),
         );
     }
@@ -26374,7 +26374,7 @@ class ThriftHiveMetastore_create_function_args {
       {
         case 1:
           if ($ftype == TType::STRUCT) {
-            $this->func = new \metastore\Function();
+            $this->func = new \metastore\HiveFunction();
             $xfer += $this->func->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -26772,7 +26772,7 @@ class ThriftHiveMetastore_alter_function_args {
    */
   public $funcName = null;
   /**
-   * @var \metastore\Function
+   * @var \metastore\HiveFunction
    */
   public $newFunc = null;
 
@@ -26790,7 +26790,7 @@ class ThriftHiveMetastore_alter_function_args {
         3 => array(
           'var' => 'newFunc',
           'type' => TType::STRUCT,
-          'class' => '\metastore\Function',
+          'class' => '\metastore\HiveFunction',
           ),
         );
     }
@@ -26842,7 +26842,7 @@ class ThriftHiveMetastore_alter_function_args {
           break;
         case 3:
           if ($ftype == TType::STRUCT) {
-            $this->newFunc = new \metastore\Function();
+            $this->newFunc = new \metastore\HiveFunction();
             $xfer += $this->newFunc->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -27314,7 +27314,7 @@ class ThriftHiveMetastore_get_function_result {
   static $_TSPEC;
 
   /**
-   * @var \metastore\Function
+   * @var \metastore\HiveFunction
    */
   public $success = null;
   /**
@@ -27332,7 +27332,7 @@ class ThriftHiveMetastore_get_function_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\metastore\Function',
+          'class' => '\metastore\HiveFunction',
           ),
         1 => array(
           'var' => 'o1',
@@ -27380,7 +27380,7 @@ class ThriftHiveMetastore_get_function_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \metastore\Function();
+            $this->success = new \metastore\HiveFunction();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -32926,5 +32926,3 @@ class ThriftHiveMetastore_show_compact_result {
   }
 
 }
-
-
