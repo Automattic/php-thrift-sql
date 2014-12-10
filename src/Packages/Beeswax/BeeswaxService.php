@@ -78,7 +78,7 @@ interface BeeswaxServiceIf {
    * @param string $s
    * @return string
    */
-  public function echo($s);
+  public function echo_str($s);
   /**
    * Returns a string representation of the configuration object being used.
    * Handy for debugging.
@@ -452,7 +452,7 @@ class BeeswaxServiceClient implements \BeeswaxServiceIf {
     throw new \Exception("get_results_metadata failed: unknown result");
   }
 
-  public function echo($s)
+  public function echo_str($s)
   {
     $this->send_echo($s);
     return $this->recv_echo();
