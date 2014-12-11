@@ -28,11 +28,11 @@ class Hive implements \ThriftSQL {
     }
 
     try {
-      $this->_transport = new \Thrift\Transport\TSocket( $host, $port );
+      $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
 
-      if ( null !== $timeout ) {
-        $this->_transport->setSendTimeout( $timeout * 1000 );
-        $this->_transport->setRecvTimeout( $timeout * 1000 );
+      if ( null !== $this->_timeout ) {
+        $this->_transport->setSendTimeout( $this->_timeout * 1000 );
+        $this->_transport->setRecvTimeout( $this->_timeout * 1000 );
       }
 
       $this->_transport->open();
@@ -44,9 +44,9 @@ class Hive implements \ThriftSQL {
       );
 
       $TOpenSessionReq = new \ThriftSQL\TOpenSessionReq();
-      if ( null !== $username && null !== $password ) {
-        $TOpenSessionReq->username = $username;
-        $TOpenSessionReq->password = $password;
+      if ( null !== $this->_username && null !== $this->_password ) {
+        $TOpenSessionReq->username = $this->_username;
+        $TOpenSessionReq->password = $this->_password;
       }
 
       // Ok, let's try to start a session

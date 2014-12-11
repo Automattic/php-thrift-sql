@@ -27,11 +27,11 @@ class Impala implements \ThriftSQL {
     }
 
     try {
-      $this->_transport = new \Thrift\Transport\TSocket( $host, $port );
+      $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
 
-      if ( null !== $timeout ) {
-        $this->_transport->setSendTimeout( $timeout * 1000 );
-        $this->_transport->setRecvTimeout( $timeout * 1000 );
+      if ( null !== $this->_timeout ) {
+        $this->_transport->setSendTimeout( $this->_timeout * 1000 );
+        $this->_transport->setRecvTimeout( $this->_timeout * 1000 );
       }
 
       $this->_transport->open();
