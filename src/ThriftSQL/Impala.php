@@ -108,18 +108,18 @@ class Impala implements \ThriftSQL {
               case 'bigint':
               case 'smallint':
               case 'tinyint':
-                $responseTuples[ $row ][ $col ] = intval( $value );
+                $responseTuples[ $row ][ $col ] = intval( $values[ $col ] );
                 break;
 
               case 'decimal':
               case 'double':
               case 'float':
               case 'real':
-                $responseTuples[ $row ][ $col ] = floatval( $value );
+                $responseTuples[ $row ][ $col ] = floatval( $values[ $col ] );
                 break;
 
               case 'boolean':
-                $responseTuples[ $row ][ $col ] = ( 'true' === $value );
+                $responseTuples[ $row ][ $col ] = ( 'true' === $values[ $col ] );
                 break;
 
               case 'char':
@@ -127,7 +127,7 @@ class Impala implements \ThriftSQL {
               case 'varchar':
               case 'timestamp':
               default:
-                $responseTuples[ $row ][ $col ] = $value;
+                $responseTuples[ $row ][ $col ] = $values[ $col ];
                 break;
             }
           }
