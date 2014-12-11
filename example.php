@@ -1,7 +1,7 @@
 <?php
 
   // Load this lib
-  require __DIR__ . '/src/autoload.php';
+  require_once __DIR__ . '/ThriftSQL.phar';
 
   // Try out a Hive query
   $hive = new \ThriftSQL\Hive( 'hive.host.local' );
