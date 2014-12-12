@@ -12,12 +12,19 @@ class Hive implements \ThriftSQL {
   private $_client;
   private $_sessionHandle;
 
+  protected $_sasl = true;
+
   public function __construct( $host, $port = 10000, $username = null, $password = null, $timeout = null ) {
     $this->_host = $host;
     $this->_port = $port;
     $this->_username = $username;
     $this->_password = $password;
     $this->_timeout = $timeout;
+  }
+
+  public function setSasl( $bool ) {
+    $this->_sasl = (bool) $bool;
+    return $this;
   }
 
   public function connect() {
@@ -33,6 +40,14 @@ class Hive implements \ThriftSQL {
       if ( null !== $this->_timeout ) {
         $this->_transport->setSendTimeout( $this->_timeout * 1000 );
         $this->_transport->setRecvTimeout( $this->_timeout * 1000 );
+      }
+
+      if ( $this->_sasl ) {
+        $this->_transport = new \Thrift\Transport\TSaslClientTransport(
+          $this->_transport,
+          $this->_username,
+          $this->_password
+        );
       }
 
       $this->_transport->open();
