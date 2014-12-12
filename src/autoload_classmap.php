@@ -233,6 +233,7 @@ return array(
     'Thrift\Transport\TMemoryBuffer'                              => __DIR__ . '/Thrift/Transport/TMemoryBuffer.php',
     'Thrift\Transport\TNullTransport'                             => __DIR__ . '/Thrift/Transport/TNullTransport.php',
     'Thrift\Transport\TPhpStream'                                 => __DIR__ . '/Thrift/Transport/TPhpStream.php',
+    'Thrift\Transport\TSaslClientTransport'                       => __DIR__ . '/ThriftExtras/Transport/TSaslClientTransport.php',
     'Thrift\Transport\TSocket'                                    => __DIR__ . '/Thrift/Transport/TSocket.php',
     'Thrift\Transport\TSocketPool'                                => __DIR__ . '/Thrift/Transport/TSocketPool.php',
     'Thrift\Transport\TTransport'                                 => __DIR__ . '/Thrift/Transport/TTransport.php',
