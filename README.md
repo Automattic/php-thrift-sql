@@ -5,7 +5,7 @@ The `ThriftSQL.phar` archive aims to provide access to SQL-on-Hadoop frameworks 
 
 Currently the following engines are supported:
 
-* *Hive* -- Over the HiveServer2 Thrift interface, SASL is not supported.
+* *Hive* -- Over the HiveServer2 Thrift interface, SASL is enabled by default so username and password must be provided however this can be turned off with the `setSasl()` method before calling `connect()`.
 * *Impala* -- Over the Impala Service Thrift interface which extends the Beeswax protocol.
 
 Usage Example
@@ -16,7 +16,7 @@ Usage Example
 require_once __DIR__ . '/ThriftSQL.phar';
 
 // Try out a Hive query
-$hive = new \ThriftSQL\Hive( 'hive.host.local' );
+$hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
 $hiveTables = $hive
   ->connect()
   ->queryAndFetchAll( 'SHOW TABLES' );
@@ -28,16 +28,4 @@ $impalaTables = $impala
   ->connect()
   ->queryAndFetchAll( 'SHOW TABLES' );
 print_r( $impalaTables );
-```
-
-Notes
------
-
-Because there is not SASL support in the official PHP Thrift libs SASL auth will need to turned off for Hive / HiveServer2.
-
-```xml
-<property>
-  <name>hive.server2.authentication</name>
-  <value>NOSASL</value>
-</property>
 ```
