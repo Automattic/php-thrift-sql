@@ -190,10 +190,14 @@ class TSaslClientTransport extends TTransport {
   }
 
   private function getFromBuffer_($len) {
-    $return = TStringFuncFactory::create()->substr( $this->readBuffer_, 0, $len );
-    $this->readBuffer_ = TStringFuncFactory::create()->substr( $this->readBuffer_, $len );
+    if ( TStringFuncFactory::create()->strlen( $this->readBuffer_ ) <= $len ) {
+      $return = $this->readBuffer_;
+      $this->readBuffer_ = '';
+    } else {
+      $return = TStringFuncFactory::create()->substr( $this->readBuffer_, 0, $len );
+      $this->readBuffer_ = TStringFuncFactory::create()->substr( $this->readBuffer_, $len );
+    }
 
     return $return;
   }
 }
-
