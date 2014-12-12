@@ -6,6 +6,7 @@
   // Try out a Hive query
   $hive = new \ThriftSQL\Hive( 'hive.host.local' );
   $hiveTables = $hive
+    ->setSasl( false ) // To turn SASL auth off, on by default
     ->connect()
     ->queryAndFetchAll( 'SHOW TABLES' );
   print_r( $hiveTables );
