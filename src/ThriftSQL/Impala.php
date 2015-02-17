@@ -53,9 +53,10 @@ class Impala implements \ThriftSQL {
   public function queryAndFetchAll( $queryStr ) {
     try {
       $sleeper = new \ThriftSQL\Utils\Sleeper();
+      $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
 
       $QueryHandle = $this->_client->query( new \ThriftSQL\Query( array(
-        'query' => $queryStr,
+        'query' => $queryCleaner->clean( $queryStr ),
       ) ) );
 
       // Wait for results

@@ -192,6 +192,7 @@ return array(
     'ThriftSQL\TTypeQualifiers'                                   => __DIR__ . '/Packages/TCLIService/Types.php',
     'ThriftSQL\TUnionTypeEntry'                                   => __DIR__ . '/Packages/TCLIService/Types.php',
     'ThriftSQL\TUserDefinedTypeEntry'                             => __DIR__ . '/Packages/TCLIService/Types.php',
+    'ThriftSQL\Utils\QueryCleaner'                                => __DIR__ . '/ThriftSQL/Utils/QueryCleaner.php',
     'ThriftSQL\Utils\Sleeper'                                     => __DIR__ . '/ThriftSQL/Utils/Sleeper.php',
     'Thrift\Base\TBase'                                           => __DIR__ . '/Thrift/Base/TBase.php',
     'Thrift\ClassLoader\ThriftClassLoader'                        => __DIR__ . '/Thrift/ClassLoader/ThriftClassLoader.php',

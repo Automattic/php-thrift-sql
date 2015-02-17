@@ -81,10 +81,11 @@ class Hive implements \ThriftSQL {
   public function queryAndFetchAll( $queryStr ) {
     try {
       $sleeper = new \ThriftSQL\Utils\Sleeper();
+      $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
 
       $TExecuteStatementResp = $this->_client->ExecuteStatement( new \ThriftSQL\TExecuteStatementReq( array(
         'sessionHandle' => $this->_sessionHandle,
-        'statement' => $queryStr,
+        'statement' => $queryCleaner->clean( $queryStr ),
         'runAsync' => true,
       ) ) );
 
