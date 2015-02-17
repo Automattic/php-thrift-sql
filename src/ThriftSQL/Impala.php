@@ -52,17 +52,20 @@ class Impala implements \ThriftSQL {
 
   public function queryAndFetchAll( $queryStr ) {
     try {
+      $sleeper = new \ThriftSQL\Utils\Sleeper();
+      $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
+
       $QueryHandle = $this->_client->query( new \ThriftSQL\Query( array(
-        'query' => $queryStr,
+        'query' => $queryCleaner->clean( $queryStr ),
       ) ) );
 
       // Wait for results
-      $iteration = 0;
+      $sleeper->reset();
       do {
 
-        usleep( $this->_getSleepUsec( $iteration ) );
+        $slept = $sleeper->sleep()->getSleptSecs();
 
-        if ( $iteration > 250 ) {
+        if ( $slept > 18000 ) { // 5 Hours
           // TODO: Actually kill the query then throw exception.
           throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
         }
@@ -155,15 +158,6 @@ class Impala implements \ThriftSQL {
     }
     $this->_transport = null;
 
-  }
-
-  private function _getSleepUsec( $iteration ) {
-    // Max out at 30 second sleep per check
-    if ( 14 < $iteration ) {
-      return 30000000;
-    }
-
-    return pow( 2, $iteration ) * 1000;
   }
 
   private function _isOperationFinished( $state ) {
