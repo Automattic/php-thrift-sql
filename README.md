@@ -28,4 +28,8 @@ $impalaTables = $impala
   ->connect()
   ->queryAndFetchAll( 'SHOW TABLES' );
 print_r( $impalaTables );
+
+// Don't forget to clear the client and close socket.
+$hive->disconnect();
+$impala->disconnect();
 ```
