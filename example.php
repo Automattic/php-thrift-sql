@@ -17,5 +17,7 @@
     ->connect()
     ->queryAndFetchAll( 'SHOW TABLES' );
   print_r( $impalaTables );
-  
-  $impala->disconnect();  //Don't forget to clear the client and close socket.
+
+  // Don't forget to clear the client and close socket.
+  $hive->disconnect();
+  $impala->disconnect();
