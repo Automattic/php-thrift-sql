@@ -89,6 +89,11 @@ class Hive implements \ThriftSQL {
         'runAsync' => true,
       ) ) );
 
+      // Check for errors
+      if ( \ThriftSQL\TStatusCode::ERROR_STATUS === $TExecuteStatementResp->status->statusCode ) {
+        throw new \ThriftSQL\Exception( "HIVE QUERY ERROR: {$TExecuteStatementResp->status->errorMessage}" );
+      }
+
       // Wait for results
       $sleeper->reset();
       do {
