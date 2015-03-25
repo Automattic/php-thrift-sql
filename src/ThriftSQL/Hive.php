@@ -142,36 +142,38 @@ class Hive implements \ThriftSQL {
          */
 
         $responseTuples = array();
-        foreach ( $TFetchResultsResp->results->columns as $col => $TColumn ) {
-          $values = array();
+        if ( $TFetchResultsResp->results instanceof \ThriftSQL\TRowSet && !empty( $TFetchResultsResp->results->columns ) ) {
+          foreach ( $TFetchResultsResp->results->columns as $col => $TColumn ) {
+            $values = array();
 
-          if ( !is_null( $TColumn->boolVal ) ) {
-            $values = $TColumn->boolVal->values;
-          }
-          if ( !is_null( $TColumn->byteVal ) ) {
-            $values = $TColumn->byteVal->values;
-          }
-          if ( !is_null( $TColumn->i16Val ) ) {
-            $values = $TColumn->i16Val->values;
-          }
-          if ( !is_null( $TColumn->i32Val ) ) {
-            $values = $TColumn->i32Val->values;
-          }
-          if ( !is_null( $TColumn->i64Val ) ) {
-            $values = $TColumn->i64Val->values;
-          }
-          if ( !is_null( $TColumn->doubleVal ) ) {
-            $values = $TColumn->doubleVal->values;
-          }
-          if ( !is_null( $TColumn->stringVal ) ) {
-            $values = $TColumn->stringVal->values;
-          }
-          if ( !is_null( $TColumn->binaryVal ) ) {
-            $values = $TColumn->binaryVal->values;
-          }
+            if ( !is_null( $TColumn->boolVal ) ) {
+              $values = $TColumn->boolVal->values;
+            }
+            if ( !is_null( $TColumn->byteVal ) ) {
+              $values = $TColumn->byteVal->values;
+            }
+            if ( !is_null( $TColumn->i16Val ) ) {
+              $values = $TColumn->i16Val->values;
+            }
+            if ( !is_null( $TColumn->i32Val ) ) {
+              $values = $TColumn->i32Val->values;
+            }
+            if ( !is_null( $TColumn->i64Val ) ) {
+              $values = $TColumn->i64Val->values;
+            }
+            if ( !is_null( $TColumn->doubleVal ) ) {
+              $values = $TColumn->doubleVal->values;
+            }
+            if ( !is_null( $TColumn->stringVal ) ) {
+              $values = $TColumn->stringVal->values;
+            }
+            if ( !is_null( $TColumn->binaryVal ) ) {
+              $values = $TColumn->binaryVal->values;
+            }
 
-          foreach ( $values as $row => $value ) {
-            $responseTuples[ $row ][ $col ] = $value;
+            foreach ( $values as $row => $value ) {
+              $responseTuples[ $row ][ $col ] = $value;
+            }
           }
         }
 
