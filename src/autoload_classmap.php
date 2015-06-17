@@ -36,6 +36,7 @@ return array(
     'ThriftSQL\Hive'                                              => __DIR__ . '/ThriftSQL/Hive.php',
     'ThriftSQL\HiveQuery'                                         => __DIR__ . '/ThriftSQL/HiveQuery.php',
     'ThriftSQL\Impala'                                            => __DIR__ . '/ThriftSQL/Impala.php',
+    'ThriftSQL\ImpalaQuery'                                       => __DIR__ . '/ThriftSQL/ImpalaQuery.php',
     'ThriftSQL\ImpalaHiveServer2ServiceClient'                    => __DIR__ . '/Packages/ImpalaService/ImpalaHiveServer2Service.php',
     'ThriftSQL\ImpalaHiveServer2ServiceIf'                        => __DIR__ . '/Packages/ImpalaService/ImpalaHiveServer2Service.php',
     'ThriftSQL\ImpalaHiveServer2Service_GetExecSummary_args'      => __DIR__ . '/Packages/ImpalaService/ImpalaHiveServer2Service.php',
