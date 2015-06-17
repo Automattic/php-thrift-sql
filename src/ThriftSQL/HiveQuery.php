@@ -8,10 +8,10 @@ class HiveQuery implements \ThriftSQLQuery {
   private $_client;
   private $_ready;
 
-  public function __construct( $resp, $client ) {
-    $this->_resp = $resp;
-    $this->_client = $client;
+  public function __construct( $response, $client ) {
+    $this->_resp = $response;
     $this->_ready = false;
+    $this->_client = $client;
   }
 
   public function wait() {

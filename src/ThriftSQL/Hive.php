@@ -69,14 +69,13 @@ class Hive implements \ThriftSQL {
 
   public function query( $queryStr ) {
     try {
-      $sleeper = new \ThriftSQL\Utils\Sleeper();
       $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-      $TExecuteStatementResp = $this->_client->ExecuteStatement( new \ThriftSQL\TExecuteStatementReq( array(
+      $response = $this->_client->ExecuteStatement( new \ThriftSQL\TExecuteStatementReq( array(
         'sessionHandle' => $this->_sessionHandle,
         'statement' => $queryCleaner->clean( $queryStr ),
         'runAsync' => true,
       ) ) );
-      return new \ThriftSQL\HiveQuery( $TExecuteStatementResp, $this->_client );
+      return new \ThriftSQL\HiveQuery( $response, $this->_client );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
