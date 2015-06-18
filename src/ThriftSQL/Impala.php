@@ -88,20 +88,4 @@ class Impala implements \ThriftSQL {
     $this->_transport = null;
 
   }
-
-  private function _isOperationFinished( $state ) {
-    return ( \ThriftSQL\QueryState::FINISHED == $state );
-  }
-
-  private function _isOperationRunning( $state ) {
-    return in_array(
-      $state,
-      array(
-        \ThriftSQL\QueryState::CREATED,     // 0
-        \ThriftSQL\QueryState::INITIALIZED, // 1
-        \ThriftSQL\QueryState::COMPILED,    // 2
-        \ThriftSQL\QueryState::RUNNING,     // 3
-      )
-    );
-  }
 }
