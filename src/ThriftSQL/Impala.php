@@ -50,98 +50,27 @@ class Impala implements \ThriftSQL {
 
   }
 
+  public function query( $queryStr ) {
+    try {
+      return new ImpalaQuery( $queryStr, $this->_client );
+    } catch ( Exception $e ) {
+      throw new \ThriftSQL\Exception( $e->getMessage() );
+    }
+  }
+
   public function queryAndFetchAll( $queryStr ) {
     try {
-      $sleeper = new \ThriftSQL\Utils\Sleeper();
-      $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-
-      $QueryHandle = $this->_client->query( new \ThriftSQL\Query( array(
-        'query' => $queryCleaner->clean( $queryStr ),
-      ) ) );
-
-      // Wait for results
-      $sleeper->reset();
+      $query = $this->query( $queryStr );
+      $query->wait();
+      $result = array();
       do {
-
-        $slept = $sleeper->sleep()->getSleptSecs();
-
-        if ( $slept > 18000 ) { // 5 Hours
-          // TODO: Actually kill the query then throw exception.
-          throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
-        }
-
-        $state = $this
-          ->_client
-          ->get_state( $QueryHandle );
-
-        if ( $this->_isOperationFinished( $state ) ) {
+        $rows = $query->fetch( 100 );
+        if ( empty( $rows ) ) {
           break;
         }
-
-        if ( $this->_isOperationRunning( $state ) ) {
-          continue;
-        }
-
-        // Query in error state
-        throw new \ThriftSQL\Exception(
-          'Query is in an error state: ' . \ThriftSQL\QueryState::$__names[ $state ]
-        );
-
-      } while (true);
-
-      // Collect results
-      $resultTuples = array();
-      do {
-
-        $Results = $this->_client->fetch( $QueryHandle, false, -1 );
-
-        if ( !$Results->ready ) {
-          // Not sure if this is possible but sleep for 1ms if it does
-          usleep( 1000 );
-          continue;
-        }
-
-        $responseTuples = array();
-        foreach ( $Results->data as $row => $rawValues ) {
-          $values = explode( "\t", $rawValues, count( $Results->columns ) );
-
-          foreach ( $Results->columns as $col => $dataType ) {
-            switch ($dataType) {
-              case 'int':
-              case 'bigint':
-              case 'smallint':
-              case 'tinyint':
-                $responseTuples[ $row ][ $col ] = intval( $values[ $col ] );
-                break;
-
-              case 'decimal':
-              case 'double':
-              case 'float':
-              case 'real':
-                $responseTuples[ $row ][ $col ] = floatval( $values[ $col ] );
-                break;
-
-              case 'boolean':
-                $responseTuples[ $row ][ $col ] = ( 'true' === $values[ $col ] );
-                break;
-
-              case 'char':
-              case 'string':
-              case 'varchar':
-              case 'timestamp':
-              default:
-                $responseTuples[ $row ][ $col ] = $values[ $col ];
-                break;
-            }
-          }
-        }
-
-        $resultTuples = array_merge( $resultTuples, $responseTuples );
-
-      } while ( $Results->has_more );
-
-      return $resultTuples;
-
+        $result = array_merge( $result, $rows );
+      } while ( true );
+      return $result;
     } catch( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
@@ -158,21 +87,5 @@ class Impala implements \ThriftSQL {
     }
     $this->_transport = null;
 
-  }
-
-  private function _isOperationFinished( $state ) {
-    return ( \ThriftSQL\QueryState::FINISHED == $state );
-  }
-
-  private function _isOperationRunning( $state ) {
-    return in_array(
-      $state,
-      array(
-        \ThriftSQL\QueryState::CREATED,     // 0
-        \ThriftSQL\QueryState::INITIALIZED, // 1
-        \ThriftSQL\QueryState::COMPILED,    // 2
-        \ThriftSQL\QueryState::RUNNING,     // 3
-      )
-    );
   }
 }
