@@ -24,21 +24,21 @@ class HiveQuery implements \ThriftSQLQuery {
         // TODO: Actually kill the query then throw exception.
         throw new \ThriftSQL\Exception( 'Hive Query Killed!' );
       }
-      $state = $this
+      $TGetOperationStatusResp = $this
         ->_client
         ->GetOperationStatus( new \ThriftSQL\TGetOperationStatusReq( array(
           'operationHandle' => $this->_resp->operationHandle,
-        ) ) )
-        ->operationState;
-      if ( $this->_isOperationFinished( $state ) ) {
+        ) ) );
+      if ( $this->_isOperationFinished( $TGetOperationStatusResp->operationState ) ) {
         break;
       }
-      if ( $this->_isOperationRunning( $state ) ) {
+      if ( $this->_isOperationRunning( $TGetOperationStatusResp->operationState ) ) {
         continue;
       }
       // Query in error state
       throw new \ThriftSQL\Exception(
-        'Query is in an error state: ' . \ThriftSQL\TOperationState::$__names[ $state ]
+        'Hive ' . \ThriftSQL\TOperationState::$__names[ $TGetOperationStatusResp->operationState ] . "\n" .
+        "Error Message: {$TGetOperationStatusResp->errorMessage}"
       );
     } while ( true );
 
