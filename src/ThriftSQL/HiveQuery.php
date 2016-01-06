@@ -2,8 +2,13 @@
 
 namespace ThriftSQL;
 
+use Thrift\Exception\TException;
+
 class HiveQuery implements \ThriftSQLQuery {
 
+  /**
+   * @var TExecuteStatementResp
+   */
   private $_resp;
   private $_client;
   private $_ready;
@@ -15,6 +20,12 @@ class HiveQuery implements \ThriftSQLQuery {
   }
 
   public function wait() {
+    // Check if results already present
+    if (!$this->_isResponseRunning()) {
+      $this->_ready = true;
+
+      return;
+    }
     // Wait for results
     $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
@@ -51,6 +62,9 @@ class HiveQuery implements \ThriftSQLQuery {
   }
 
   public function fetch( $maxRows ) {
+    if ( $this->_isError() ) {
+      throw new TException( $this->_resp->status->errorMessage, $this->_resp->status->errorCode );
+    }
     if ( !$this->_ready ) {
       throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->fetch()`" );
     }
@@ -120,5 +134,21 @@ class HiveQuery implements \ThriftSQLQuery {
         \ThriftSQL\TOperationState::PENDING_STATE,     // 7
       )
     );
+  }
+
+  private function _isResponseRunning() {
+    if ( $this->_resp && isset( $this->_resp->status ) && isset( $this->_resp->status->statusCode ) ) {
+      return $this->_isOperationRunning($this->_resp->status->statusCode);
+    }
+
+    return true;
+  }
+
+  private function _isError() {
+    if ( $this->_resp && isset( $this->_resp->status ) && $this->_resp->status->errorCode ) {
+      return true;
+    }
+
+    return false;
   }
 }
