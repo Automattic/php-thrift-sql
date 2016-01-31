@@ -96,7 +96,7 @@ class Hive implements \ThriftSQL {
         $resultTuples = array_merge( $resultTuples, $responseTuples );
       } while (true);
     } catch( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
   }
 
