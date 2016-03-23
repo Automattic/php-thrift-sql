@@ -75,10 +75,13 @@ class Hive implements \ThriftSQL {
         'statement' => $queryCleaner->clean( $queryStr ),
         'runAsync' => true,
       ) ) );
-      return new \ThriftSQL\HiveQuery( $response, $this->_client );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
+    if ( \ThriftSQL\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
+      throw new \ThriftSQL\Exception( $response->status->errorMessage );
+    }
+    return new \ThriftSQL\HiveQuery( $response, $this->_client );
   }
 
   public function queryAndFetchAll( $queryStr ) {
