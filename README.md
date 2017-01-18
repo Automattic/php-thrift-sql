@@ -8,6 +8,13 @@ Currently the following engines are supported:
 * *Hive* -- Over the HiveServer2 Thrift interface, SASL is enabled by default so username and password must be provided however this can be turned off with the `setSasl()` method before calling `connect()`.
 * *Impala* -- Over the Impala Service Thrift interface which extends the Beeswax protocol.
 
+Building Phar
+-------------
+
+```
+$ php -c php.ini build.php
+```
+
 Usage Example
 -------------
 
