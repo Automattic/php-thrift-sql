@@ -1,6 +1,8 @@
 <?php
 namespace ThriftSQL;
 
+use Thrift\Transport\TTransport;
+
 class Impala implements \ThriftSQL {
 
   private $_host;
@@ -8,6 +10,10 @@ class Impala implements \ThriftSQL {
   private $_username;
   private $_password;
   private $_timeout;
+
+  /**
+   * @var TTransport
+   */
   private $_transport;
   private $_client;
 
@@ -51,11 +57,11 @@ class Impala implements \ThriftSQL {
   }
 
   public function query( $queryStr ) {
-    try {
-      return new ImpalaQuery( $queryStr, $this->_client );
-    } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
+	try {
+	  return new \ThriftSQL\ImpalaQuery( $queryStr, $this->_client );
+	} catch ( Exception $e ) {
+	  throw new \ThriftSQL\Exception( $e->getMessage() );
+	}
   }
 
   public function queryAndFetchAll( $queryStr ) {
@@ -68,7 +74,14 @@ class Impala implements \ThriftSQL {
         if ( empty( $rows ) ) {
           break;
         }
-        $result = array_merge( $result, $rows );
+		// Custom array_merge because of performance boost.
+		foreach ($rows as $rowKey => $rowData) {
+		  if (isset($result[$rowKey]) && $result[$rowKey] != $rows[$rowKey]) {
+			  $result[] = $rows[$rowKey];
+		  } else {
+			  $result[$rowKey] = $rows[$rowKey];
+		  }
+		}
       } while ( true );
       return $result;
     } catch( Exception $e ) {
