@@ -17,6 +17,17 @@ interface ThriftSQL {
   */
   public function queryAndFetchAll( $queryStr );
 
+	/**
+	 * Get's a memory efficient iterator that you can use in a foreach loop.
+	 * If there's an error with the query, it will simply stop iterating.
+	 *
+	 * @param string $queryStr
+	 *
+	 * @return \ThriftSQL\ThriftStream
+	 * @throws \ThriftSQL\Exception
+	 */
+  public function getIterator( $queryStr );
+
   /**
   * Sends a query string for execution on the server and returns a
   * ThriftSQLQuery object for fetching the results manually.

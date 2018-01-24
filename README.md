@@ -40,3 +40,20 @@ print_r( $impalaTables );
 $hive->disconnect();
 $impala->disconnect();
 ```
+
+Use the memory efficient iterator:
+
+```php
+// Load this lib
+require_once __DIR__ . '/ThriftSQL.phar';
+
+// Try out a Hive query
+$hiveIterator = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
+$hiveTables = $hive
+  ->connect()
+  ->getIterator('SHOW TABLES');
+  
+foreach($hiveIterator as $rowNum => $row) {
+    print_r( $row );
+}
+```

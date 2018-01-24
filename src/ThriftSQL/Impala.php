@@ -88,4 +88,21 @@ class Impala implements \ThriftSQL {
     $this->_transport = null;
 
   }
+
+	/**
+	 * Get's a memory efficient iterator that you can use in a foreach loop.
+	 * If there's an error with the query, it will simply stop iterating.
+	 *
+	 * @param string $queryStr
+	 *
+	 * @return ThriftStream
+	 * @throws Exception
+	 */
+	public function getIterator( $queryStr ) {
+		try {
+			return new ThriftStream( $this, $queryStr );
+		} catch ( \Exception $e ) {
+			throw new \ThriftSQL\Exception( $e->getMessage() );
+		}
+	}
 }
