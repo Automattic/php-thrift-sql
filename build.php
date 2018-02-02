@@ -1,11 +1,19 @@
 <?php
 
-  // Cleanup
-  if ( file_exists( __DIR__ . 'ThriftSQL.phar' ) ) {
-    Phar::unlinkArchive( __DIR__ . 'ThriftSQL.phar' );
+  // Check we have dev tools
+  if ( !file_exists( __DIR__ . '/vendor/bin/php-generate-autoload' ) ) {
+    echo "Please install dev tools with:\n\n$ composer install\n";
+    exit(1);
   }
 
+  // Update autoload file
+  echo "Updating 'src/autoload.php'\n";
+  echo "\t" . preg_replace( '/\n/', "\n\t", shell_exec(
+    './vendor/bin/php-generate-autoload src/autoload.php'
+  ) ) . "\n";
+
   // Create Stub
+  echo "Updating 'ThriftSQL.phar'... ";
   $stub = <<<EOF
 <?php
   include 'phar://' . __FILE__ . '/autoload.php';
@@ -17,4 +25,4 @@ EOF;
   $phar->buildFromDirectory( __DIR__ . '/src' );
   $phar->setStub( $stub );
 
-  echo "Built ThriftSQL.phar!\n";
+  echo "Built!\n";
