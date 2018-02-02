@@ -16,3 +16,5 @@ EOF;
   $phar = new Phar( 'ThriftSQL.phar', null, 'ThriftSQL.phar' );
   $phar->buildFromDirectory( __DIR__ . '/src' );
   $phar->setStub( $stub );
+
+  echo "Built ThriftSQL.phar!\n";
