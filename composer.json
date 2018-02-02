@@ -25,9 +25,6 @@
       "url": "https://github.com/Automattic/php-thrift-sql"
     }
   ],
-  "archive": {
-    "exclude": [ "/src", "/build.php", "/example.php" ]
-  },
   "require-dev": {
     "jesseschalken/autoload-generator": "^0.2.3"
   }
