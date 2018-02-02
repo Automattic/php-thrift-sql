@@ -1,6 +1,5 @@
 {
   "name": "automattic/php-thrift-sql",
-  "time": "2018-02-02",
   "type": "library",
   "description": "PHP Thrift Client for Impala and Hive Queries",
   "keywords": [ "Thrift", "SQL", "Database", "Hive", "Impala" ],
@@ -25,8 +24,5 @@
       "type": "vcs",
       "url": "https://github.com/Automattic/php-thrift-sql"
     }
-  ],
-  "archive": {
-    "exclude": [ "/src", "/build.php", "/example.php" ]
-  }
+  ]
 }
