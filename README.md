@@ -12,7 +12,7 @@ Building Phar
 -------------
 
 ```
-$ php -c php.ini build.php
+$ php -d phar.readonly=0 build.php
 ```
 
 Usage Example
