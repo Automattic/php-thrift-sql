@@ -1,3 +1,3 @@
-/src/ export-ignore
-/build.php export-ignore
-/example.php export-ignore
+src                 export-ignore
+build.php           export-ignore
+example.php         export-ignore
