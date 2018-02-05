@@ -38,8 +38,8 @@ class ThriftStream implements \Iterator {
 	 * @since 5.0.0
 	 */
 	public function next() {
-		$this->location ++;
-		array_pop( $this->buffer );
+		$this->location++;
+		array_shift( $this->buffer );
 	}
 
 	/**
