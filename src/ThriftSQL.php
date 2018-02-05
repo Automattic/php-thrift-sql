@@ -23,7 +23,7 @@ interface ThriftSQL {
    *
    * @param string $queryStr
    *
-   * @return \ThriftSQL\ThriftStream
+   * @return \ThriftSQL\Utils\Iterator
    * @throws \ThriftSQL\Exception
    */
   public function getIterator( $queryStr );

@@ -1,8 +1,8 @@
 <?php
 
-namespace ThriftSQL;
+namespace ThriftSQL\Utils;
 
-class ThriftStream implements \Iterator {
+class Iterator implements \Iterator {
 
   const BUFFER_ROWS = 64;
 
@@ -93,11 +93,11 @@ class ThriftStream implements \Iterator {
    * @link http://php.net/manual/en/iterator.rewind.php
    * @return void Any returned value is ignored.
    * @since 5.0.0
-   * @throws Exception
+   * @throws \ThriftSQL\Exception
    */
   public function rewind() {
     if ( $this->runCount > 0 && !$this->allowRerun ) {
-      throw new Exception(
+      throw new \ThriftSQL\Exception(
         'Iterator rewound, this will cause the ThriftSQL to execute again. ' .
         'Set `' . __CLASS__ . '::allowRerun(true)` to allow this behavior.'
       );
@@ -110,7 +110,7 @@ class ThriftStream implements \Iterator {
       $this->location = 0;
       $this->thriftSQLQuery->wait();
     } catch ( \Exception $exception ) {
-      throw new Exception( $exception->getMessage() );
+      throw new \ThriftSQL\Exception( $exception->getMessage() );
     }
   }
 }

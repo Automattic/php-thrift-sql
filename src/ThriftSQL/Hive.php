@@ -126,12 +126,12 @@ class Hive implements \ThriftSQL {
    *
    * @param string $queryStr
    *
-   * @return \ThriftSQL\ThriftStream
+   * @return \ThriftSQL\Utils\Iterator
    * @throws \ThriftSQL\Exception
    */
   public function getIterator( $queryStr ) {
     try {
-      return new ThriftStream( $this, $queryStr );
+      return new Utils\Iterator( $this, $queryStr );
     } catch ( \Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }

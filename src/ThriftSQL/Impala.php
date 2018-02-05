@@ -95,12 +95,12 @@ class Impala implements \ThriftSQL {
    *
    * @param string $queryStr
    *
-   * @return ThriftStream
+   * @return Utils\Iterator
    * @throws Exception
    */
   public function getIterator( $queryStr ) {
     try {
-      return new ThriftStream( $this, $queryStr );
+      return new Utils\Iterator( $this, $queryStr );
     } catch ( \Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
