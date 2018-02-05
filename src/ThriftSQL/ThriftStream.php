@@ -9,18 +9,19 @@ class ThriftStream implements \Iterator {
 	/**
 	 * @var \ThriftSQL
 	 */
-	private $query;
-	private $buffer;
-	private $location;
+	private $thriftSQL;
 
 	/**
 	 * @var \ThriftSQLQuery
 	 */
-	private $stream;
-	private $queryStr;
+	private $thriftSQLQuery;
 
-	public function __construct( $query, $queryStr ) {
-		$this->query    = $query;
+	private $queryStr;
+	private $buffer;
+	private $location;
+
+	public function __construct( \ThriftSQL $thriftSQL, $queryStr ) {
+		$this->thriftSQL = $thriftSQL;
 		$this->queryStr = $queryStr;
 	}
 
@@ -68,7 +69,7 @@ class ThriftStream implements \Iterator {
 		}
 
 		try {
-			$this->buffer = $this->stream->fetch( self::BUFFER_ROWS );
+			$this->buffer = $this->thriftSQLQuery->fetch( self::BUFFER_ROWS );
 			if ( empty( $this->buffer ) ) {
 				return false;
 			}
@@ -88,10 +89,10 @@ class ThriftStream implements \Iterator {
 	 */
 	public function rewind() {
 		try {
-			$this->stream   = $this->query->query( $this->queryStr );
-			$this->buffer   = array();
+			$this->thriftSQLQuery = $this->thriftSQL->query( $this->queryStr );
+			$this->buffer = array();
 			$this->location = 0;
-			$this->stream->wait();
+			$this->thriftSQLQuery->wait();
 		} catch ( \Exception $exception ) {
 			throw new Exception( $exception->getMessage() );
 		}
