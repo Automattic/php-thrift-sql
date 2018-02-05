@@ -119,5 +119,4 @@ class Hive extends \ThriftSQL {
     }
     $this->_transport = null;
   }
-
 }

@@ -88,5 +88,4 @@ class Impala extends \ThriftSQL {
     $this->_transport = null;
 
   }
-
 }

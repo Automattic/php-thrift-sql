@@ -48,5 +48,4 @@ abstract class ThriftSQL {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
   }
-
 }
