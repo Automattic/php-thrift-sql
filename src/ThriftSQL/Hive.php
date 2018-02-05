@@ -12,7 +12,7 @@ class Hive implements \ThriftSQL {
   private $_client;
   private $_sessionHandle;
   protected $_sasl = true;
-  
+
   public function __construct( $host, $port = 10000, $username = null, $password = null, $timeout = null ) {
     $this->_host = $host;
     $this->_port = $port;
@@ -120,20 +120,20 @@ class Hive implements \ThriftSQL {
     $this->_transport = null;
   }
 
-	/**
-	 * Get's a memory efficient iterator that you can use in a foreach loop.
-	 * If there's an error with the query, it will simply stop iterating.
-	 *
-	 * @param string $queryStr
-	 *
-	 * @return \ThriftSQL\ThriftStream
-	 * @throws \ThriftSQL\Exception
-	 */
-	public function getIterator( $queryStr ) {
-		try {
-			return new ThriftStream( $this, $queryStr );
-		} catch ( \Exception $e ) {
-			throw new \ThriftSQL\Exception( $e->getMessage() );
-		}
-	}
+  /**
+   * Get's a memory efficient iterator that you can use in a foreach loop.
+   * If there's an error with the query, it will simply stop iterating.
+   *
+   * @param string $queryStr
+   *
+   * @return \ThriftSQL\ThriftStream
+   * @throws \ThriftSQL\Exception
+   */
+  public function getIterator( $queryStr ) {
+    try {
+      return new ThriftStream( $this, $queryStr );
+    } catch ( \Exception $e ) {
+      throw new \ThriftSQL\Exception( $e->getMessage() );
+    }
+  }
 }
