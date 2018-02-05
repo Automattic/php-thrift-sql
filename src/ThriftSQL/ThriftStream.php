@@ -20,9 +20,17 @@ class ThriftStream implements \Iterator {
 	private $buffer;
 	private $location;
 
+	private $runCount = 0;
+	private $allowRerun = false;
+
 	public function __construct( \ThriftSQL $thriftSQL, $queryStr ) {
 		$this->thriftSQL = $thriftSQL;
 		$this->queryStr = $queryStr;
+	}
+
+	public function allowRerun( $value ) {
+		$this->allowRerun = (bool) $value;
+		return $this;
 	}
 
 	/**
@@ -88,6 +96,14 @@ class ThriftStream implements \Iterator {
 	 * @throws Exception
 	 */
 	public function rewind() {
+		if ( $this->runCount > 0 && !$this->allowRerun ) {
+			throw new Exception(
+				'Iterator rewound, this will cause the ThriftSQL to execute again. ' .
+				'Set `allowRerun(true)` to allow this behavior.'
+			);
+		}
+		$this->runCount++;
+
 		try {
 			$this->thriftSQLQuery = $this->thriftSQL->query( $this->queryStr );
 			$this->buffer = array();
