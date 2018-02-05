@@ -99,7 +99,7 @@ class ThriftStream implements \Iterator {
 		if ( $this->runCount > 0 && !$this->allowRerun ) {
 			throw new Exception(
 				'Iterator rewound, this will cause the ThriftSQL to execute again. ' .
-				'Set `allowRerun(true)` to allow this behavior.'
+				'Set `' . __CLASS__ . '::allowRerun(true)` to allow this behavior.'
 			);
 		}
 		$this->runCount++;
