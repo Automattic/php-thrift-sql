@@ -1,7 +1,7 @@
 <?php
 namespace ThriftSQL;
 
-class Impala implements \ThriftSQL {
+class Impala extends \ThriftSQL {
 
   private $_host;
   private $_port;
@@ -89,20 +89,4 @@ class Impala implements \ThriftSQL {
 
   }
 
-  /**
-   * Get's a memory efficient iterator that you can use in a foreach loop.
-   * If there's an error with the query, it will simply stop iterating.
-   *
-   * @param string $queryStr
-   *
-   * @return Utils\Iterator
-   * @throws Exception
-   */
-  public function getIterator( $queryStr ) {
-    try {
-      return new Utils\Iterator( $this, $queryStr );
-    } catch ( \Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
-  }
 }

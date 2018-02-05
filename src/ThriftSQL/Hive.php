@@ -2,7 +2,7 @@
 
 namespace ThriftSQL;
 
-class Hive implements \ThriftSQL {
+class Hive extends \ThriftSQL {
   private $_host;
   private $_port;
   private $_username;
@@ -120,20 +120,4 @@ class Hive implements \ThriftSQL {
     $this->_transport = null;
   }
 
-  /**
-   * Get's a memory efficient iterator that you can use in a foreach loop.
-   * If there's an error with the query, it will simply stop iterating.
-   *
-   * @param string $queryStr
-   *
-   * @return \ThriftSQL\Utils\Iterator
-   * @throws \ThriftSQL\Exception
-   */
-  public function getIterator( $queryStr ) {
-    try {
-      return new Utils\Iterator( $this, $queryStr );
-    } catch ( \Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
-  }
 }
