@@ -48,12 +48,16 @@ Use the memory efficient iterator:
 require_once __DIR__ . '/ThriftSQL.phar';
 
 // Try out a Hive query
-$hiveIterator = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
-$hiveTables = $hive
+$hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
+$hiveIterator = $hive
   ->connect()
-  ->getIterator('SHOW TABLES');
-  
-foreach($hiveIterator as $rowNum => $row) {
+  ->getIterator( 'SHOW TABLES' );
+
+// Run the query and iterate over the result set
+foreach( $hiveIterator as $rowNum => $row ) {
     print_r( $row );
 }
+
+// Don't forget to clear the client and close socket.
+$hive->disconnect();
 ```
