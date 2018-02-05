@@ -3,6 +3,9 @@
 namespace ThriftSQL;
 
 class ThriftStream implements \Iterator {
+
+	const BUFFER_ROWS = 64;
+
 	/**
 	 * @var \ThriftSQL
 	 */
@@ -65,7 +68,7 @@ class ThriftStream implements \Iterator {
 		}
 
 		try {
-			$this->buffer = array_merge( $this->buffer, $this->stream->fetch( 100 ) );
+			$this->buffer = $this->stream->fetch( self::BUFFER_ROWS );
 			if ( empty( $this->buffer ) ) {
 				return false;
 			}
