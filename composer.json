@@ -24,5 +24,8 @@
       "type": "vcs",
       "url": "https://github.com/Automattic/php-thrift-sql"
     }
-  ]
+  ],
+  "require-dev": {
+    "jesseschalken/autoload-generator": "^0.2.3"
+  }
 }
