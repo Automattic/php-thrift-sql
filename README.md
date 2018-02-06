@@ -49,13 +49,13 @@ require_once __DIR__ . '/ThriftSQL.phar';
 
 // Try out a Hive query
 $hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
-$hiveIterator = $hive
+$hiveTables = $hive
   ->connect()
   ->getIterator( 'SHOW TABLES' );
 
 // Run the query and iterate over the result set
-foreach( $hiveIterator as $rowNum => $row ) {
-    print_r( $row );
+foreach( $hiveTables as $rowNum => $row ) {
+  print_r( $row );
 }
 
 // Don't forget to clear the client and close socket.
