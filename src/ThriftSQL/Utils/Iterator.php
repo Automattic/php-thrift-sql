@@ -76,16 +76,8 @@ class Iterator implements \Iterator {
       return true;
     }
 
-    try {
-      $this->buffer = $this->thriftSQLQuery->fetch( self::BUFFER_ROWS );
-      if ( empty( $this->buffer ) ) {
-        return false;
-      }
-
-      return true;
-    } catch ( \Exception $e ) {
-      return false;
-    }
+    $this->buffer = $this->thriftSQLQuery->fetch( self::BUFFER_ROWS );
+    return ( ! empty( $this->buffer ) );
   }
 
   /**
