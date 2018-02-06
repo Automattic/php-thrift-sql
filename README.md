@@ -91,6 +91,9 @@ $hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
 $hiveTables = $hive
   ->connect()
   ->queryAndFetchAll( 'SHOW TABLES' );
+$hive->disconnect();
+
+// Print out the cached results
 print_r( $hiveTables );
 ```
 
@@ -100,5 +103,8 @@ $impala = new \ThriftSQL\Impala( 'impala.host.local' );
 $impalaTables = $impala
   ->connect()
   ->queryAndFetchAll( 'SHOW TABLES' );
+$impala->disconnect();
+
+// Print out the cached results
 print_r( $impalaTables );
 ```
