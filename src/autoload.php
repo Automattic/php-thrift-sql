@@ -198,6 +198,7 @@
   'ThriftSQL\\TTypeQualifiers' => 'Packages/TCLIService/Types.php',
   'ThriftSQL\\TUnionTypeEntry' => 'Packages/TCLIService/Types.php',
   'ThriftSQL\\TUserDefinedTypeEntry' => 'Packages/TCLIService/Types.php',
+  'ThriftSQL\\Utils\\Iterator' => 'ThriftSQL/Utils/Iterator.php',
   'ThriftSQL\\Utils\\QueryCleaner' => 'ThriftSQL/Utils/QueryCleaner.php',
   'ThriftSQL\\Utils\\Sleeper' => 'ThriftSQL/Utils/Sleeper.php',
   'Thrift\\Base\\TBase' => 'Thrift/Base/TBase.php',
