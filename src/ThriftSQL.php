@@ -34,18 +34,12 @@ abstract class ThriftSQL {
 
   /**
    * Gets a memory efficient iterator that you can use in a foreach loop.
-   * If there's an error with the query, it will simply stop iterating.
    *
    * @param string $queryStr
-   *
    * @return \ThriftSQL\Utils\Iterator
    * @throws \ThriftSQL\Exception
    */
   public function getIterator( $queryStr ) {
-    try {
-      return new \ThriftSQL\Utils\Iterator( $this, $queryStr );
-    } catch ( \Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
+    return new \ThriftSQL\Utils\Iterator( $this, $queryStr );
   }
 }
