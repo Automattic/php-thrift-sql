@@ -33,7 +33,7 @@ abstract class ThriftSQL {
   abstract public function disconnect();
 
   /**
-   * Get's a memory efficient iterator that you can use in a foreach loop.
+   * Gets a memory efficient iterator that you can use in a foreach loop.
    * If there's an error with the query, it will simply stop iterating.
    *
    * @param string $queryStr
