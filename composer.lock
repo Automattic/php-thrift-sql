@@ -1,0 +1,186 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "8d2ed5770611027e95542aa8e52c6a16",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "docopt/docopt",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/docopt/docopt.php.git",
+                "reference": "d2ee65c2fe4be78f945a48edd02be45843b39423"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/docopt/docopt.php/zipball/d2ee65c2fe4be78f945a48edd02be45843b39423",
+                "reference": "d2ee65c2fe4be78f945a48edd02be45843b39423",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/docopt.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Blake Williams",
+                    "email": "code@shabbyrobe.org",
+                    "homepage": "http://docopt.org/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Port of Python's docopt for PHP 5.3",
+            "homepage": "http://github.com/docopt/docopt.php",
+            "keywords": [
+                "cli",
+                "docs"
+            ],
+            "time": "2015-10-30T03:21:23+00:00"
+        },
+        {
+            "name": "jesseschalken/autoload-generator",
+            "version": "0.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jesseschalken/php-autoload-generator.git",
+                "reference": "f09718ddaeffd1a3b4dc8c621b2842790b88a213"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jesseschalken/php-autoload-generator/zipball/f09718ddaeffd1a3b4dc8c621b2842790b88a213",
+                "reference": "f09718ddaeffd1a3b4dc8c621b2842790b88a213",
+                "shasum": ""
+            },
+            "require": {
+                "docopt/docopt": "^1.0",
+                "jesseschalken/pure-json": "^1.2.0",
+                "nikic/php-parser": "^1.4"
+            },
+            "bin": [
+                "php-generate-autoload"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jesse Schalken",
+                    "email": "me@jesseschalken.com"
+                }
+            ],
+            "description": "Generates classmap-based include/autoload files for PHP projects, with support for functions and constants.",
+            "time": "2016-12-09T01:47:25+00:00"
+        },
+        {
+            "name": "jesseschalken/pure-json",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jesseschalken/pure-json.git",
+                "reference": "72ccc6891f88893c1651f6a9f513385a79453427"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jesseschalken/pure-json/zipball/72ccc6891f88893c1651f6a9f513385a79453427",
+                "reference": "72ccc6891f88893c1651f6a9f513385a79453427",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "JSON.php"
+                ],
+                "files": [
+                    "php_compat.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jesse Schalken",
+                    "email": "me@jesseschalken.com"
+                }
+            ],
+            "description": "json_encode/json_decode wrapper with error checking and one-to-one mapping between PHP and JSON values",
+            "time": "2016-05-14T15:40:43+00:00"
+        },
+        {
+            "name": "nikic/php-parser",
+            "version": "v1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "f78af2c9c86107aa1a34cd1dbb5bbe9eeb0d9f51"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f78af2c9c86107aa1a34cd1dbb5bbe9eeb0d9f51",
+                "reference": "f78af2c9c86107aa1a34cd1dbb5bbe9eeb0d9f51",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2015-09-19T14:15:08+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}
