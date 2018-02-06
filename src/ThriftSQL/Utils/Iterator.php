@@ -96,13 +96,9 @@ class Iterator implements \Iterator {
     }
     $this->runCount++;
 
-    try {
-      $this->thriftSQLQuery = $this->thriftSQL->query( $this->queryStr );
-      $this->buffer = array();
-      $this->location = 0;
-      $this->thriftSQLQuery->wait();
-    } catch ( \Exception $exception ) {
-      throw new \ThriftSQL\Exception( $exception->getMessage() );
-    }
+    $this->thriftSQLQuery = $this->thriftSQL->query( $this->queryStr );
+    $this->buffer = array();
+    $this->location = 0;
+    $this->thriftSQLQuery->wait();
   }
 }
