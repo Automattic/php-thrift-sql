@@ -20,7 +20,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
   public function wait() {
     $sleeper = new \ThriftSQL\Utils\Sleeper();
-    
+
     // Wait for results
     $sleeper->reset();
     do {
