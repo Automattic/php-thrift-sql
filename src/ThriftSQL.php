@@ -1,11 +1,11 @@
 <?php
 
-interface ThriftSQL {
+abstract class ThriftSQL {
   /**
   * @return self
   * @throws \ThriftSQL\Exception
   */
-  public function connect();
+  abstract public function connect();
 
   /**
   * The simplest use case; takes a query string executes it synchronously and
@@ -15,7 +15,7 @@ interface ThriftSQL {
   * @return array
   * @throws \ThriftSQL\Exception
   */
-  public function queryAndFetchAll( $queryStr );
+  abstract public function queryAndFetchAll( $queryStr );
 
   /**
   * Sends a query string for execution on the server and returns a
@@ -25,10 +25,21 @@ interface ThriftSQL {
   * @return \ThriftSQLQuery
   * @throws \ThriftSQL\Exception
   */
-  public function query( $queryStr );
+  abstract public function query( $queryStr );
 
   /**
   * @return null
   */
-  public function disconnect();
+  abstract public function disconnect();
+
+  /**
+   * Gets a memory efficient iterator that you can use in a foreach loop.
+   *
+   * @param string $queryStr
+   * @return \ThriftSQL\Utils\Iterator
+   * @throws \ThriftSQL\Exception
+   */
+  public function getIterator( $queryStr ) {
+    return new \ThriftSQL\Utils\Iterator( $this, $queryStr );
+  }
 }

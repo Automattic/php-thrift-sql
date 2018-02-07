@@ -1,7 +1,7 @@
 <?php
 namespace ThriftSQL;
 
-class Impala implements \ThriftSQL {
+class Impala extends \ThriftSQL {
 
   private $_host;
   private $_port;

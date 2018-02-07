@@ -2,7 +2,7 @@
 
 namespace ThriftSQL;
 
-class Hive implements \ThriftSQL {
+class Hive extends \ThriftSQL {
   private $_host;
   private $_port;
   private $_username;
@@ -12,7 +12,7 @@ class Hive implements \ThriftSQL {
   private $_client;
   private $_sessionHandle;
   protected $_sasl = true;
-  
+
   public function __construct( $host, $port = 10000, $username = null, $password = null, $timeout = null ) {
     $this->_host = $host;
     $this->_port = $port;
