@@ -84,25 +84,6 @@ class Hive extends \ThriftSQL {
     return new \ThriftSQL\HiveQuery( $response, $this->_client );
   }
 
-  public function queryAndFetchAll( $queryStr ) {
-    try {
-      $query = $this->query( $queryStr );
-      $query->wait();
-      // Collect results
-      $resultTuples = array();
-      do {
-        $responseTuples = $query->fetch(100);
-        // No more data we're done
-        if ( empty( $responseTuples ) ) {
-          return $resultTuples;
-        }
-        $resultTuples = array_merge( $resultTuples, $responseTuples );
-      } while (true);
-    } catch( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
-  }
-
   public function disconnect() {
     // Close session if we have one
     if ( null !== $this->_sessionHandle ) {

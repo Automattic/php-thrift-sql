@@ -20,7 +20,6 @@ class Impala extends \ThriftSQL {
   }
 
   public function connect() {
-
     // Check if we have already connected
     if ( null !== $this->_client ) {
       return $this;
@@ -47,7 +46,6 @@ class Impala extends \ThriftSQL {
     }
 
     return $this;
-
   }
 
   public function query( $queryStr ) {
@@ -58,26 +56,7 @@ class Impala extends \ThriftSQL {
     }
   }
 
-  public function queryAndFetchAll( $queryStr ) {
-    try {
-      $query = $this->query( $queryStr );
-      $query->wait();
-      $result = array();
-      do {
-        $rows = $query->fetch( 100 );
-        if ( empty( $rows ) ) {
-          break;
-        }
-        $result = array_merge( $result, $rows );
-      } while ( true );
-      return $result;
-    } catch( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
-    }
-  }
-
   public function disconnect() {
-
     // Clear out the client
     $this->_client = null;
 
@@ -86,6 +65,5 @@ class Impala extends \ThriftSQL {
       $this->_transport->close();
     }
     $this->_transport = null;
-
   }
 }

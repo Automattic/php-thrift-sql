@@ -8,16 +8,6 @@ abstract class ThriftSQL {
   abstract public function connect();
 
   /**
-  * The simplest use case; takes a query string executes it synchronously and
-  * returns the entire result set after collecting it from the server.
-  *
-  * @param string $queryStr
-  * @return array
-  * @throws \ThriftSQL\Exception
-  */
-  abstract public function queryAndFetchAll( $queryStr );
-
-  /**
   * Sends a query string for execution on the server and returns a
   * ThriftSQLQuery object for fetching the results manually.
   *
@@ -31,6 +21,25 @@ abstract class ThriftSQL {
   * @return null
   */
   abstract public function disconnect();
+
+  /**
+  * The simplest use case; takes a query string executes it synchronously and
+  * returns the entire result set after collecting it from the server.
+  *
+  * @param string $queryStr
+  * @return array
+  * @throws \ThriftSQL\Exception
+  */
+  public function queryAndFetchAll( $queryStr ) {
+    $iterator = $this->getIterator( $queryStr );
+
+    $resultTuples = array();
+    foreach( $iterator as $rowNum => $row ) {
+      $resultTuples[] = $row;
+    }
+
+    return $resultTuples;
+  }
 
   /**
    * Gets a memory efficient iterator that you can use in a foreach loop.
