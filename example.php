@@ -3,21 +3,28 @@
   // Load this lib
   require_once __DIR__ . '/ThriftSQL.phar';
 
-  // Try out a Hive query
-  $hive = new \ThriftSQL\Hive( 'hive.host.local' );
+  // Try out a Hive query via iterator object
+  $hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
   $hiveTables = $hive
-    ->setSasl( false ) // To turn SASL auth off, on by default
     ->connect()
-    ->queryAndFetchAll( 'SHOW TABLES' );
-  print_r( $hiveTables );
+    ->getIterator( 'SHOW TABLES' );
 
-  // Try out an Impala query
+  // Try out an Impala query via iterator object
   $impala = new \ThriftSQL\Impala( 'impala.host.local' );
   $impalaTables = $impala
     ->connect()
-    ->queryAndFetchAll( 'SHOW TABLES' );
-  print_r( $impalaTables );
+    ->getIterator( 'SHOW TABLES' );
 
-  // Don't forget to clear the client and close socket.
+  // Execute the Hive query and iterate over the result set
+  foreach( $hiveTables as $rowNum => $row ) {
+    print_r( $row );
+  }
+
+  // Execute the Impala query and iterate over the result set
+  foreach( $impalaTables as $rowNum => $row ) {
+    print_r( $row );
+  }
+
+  // Don't forget to close socket connection once you're done with it
   $hive->disconnect();
   $impala->disconnect();
