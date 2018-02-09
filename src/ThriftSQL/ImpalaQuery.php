@@ -52,6 +52,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
     } while (true);
 
     $this->_ready = true;
+    return $this;
   }
 
   public function fetch( $maxRows ) {

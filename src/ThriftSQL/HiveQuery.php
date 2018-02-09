@@ -48,6 +48,7 @@ class HiveQuery implements \ThriftSQLQuery {
     }
 
     $this->_ready = true;
+    return $this;
   }
 
   public function fetch( $maxRows ) {
