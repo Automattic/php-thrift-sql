@@ -15,6 +15,10 @@ class HiveQuery implements \ThriftSQLQuery {
   }
 
   public function wait() {
+    if ( $this->_ready ) {
+      return $this;
+    }
+
     // Wait for results
     $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
