@@ -19,15 +19,15 @@ class ImpalaQuery implements \ThriftSQLQuery {
   }
 
   public function wait() {
-    $sleeper = new \ThriftSQL\Utils\Sleeper();
+    if ( $this->_ready ) {
+      return $this;
+    }
 
-    // Wait for results
+    // Wait for query to be ready
+    $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
     do {
-
-      $slept = $sleeper->sleep()->getSleptSecs();
-
-      if ( $slept > 18000 ) { // 5 Hours
+      if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
         // TODO: Actually kill the query then throw exception.
         throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
       }
@@ -68,9 +68,8 @@ class ImpalaQuery implements \ThriftSQLQuery {
         if ( $response->ready ) {
           break;
         }
-        $slept = $sleeper->sleep()->getSleptSecs();
 
-        if ( $slept > 60 ) { // 1 minute
+        if ( $sleeper->sleep()->getSleptSecs() > 60 ) { // 1 Minute
           throw new \ThriftSQL\Exception( 'Impala Query took too long to fetch!' );
         }
 

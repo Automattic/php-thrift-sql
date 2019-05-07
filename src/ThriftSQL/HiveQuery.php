@@ -15,12 +15,15 @@ class HiveQuery implements \ThriftSQLQuery {
   }
 
   public function wait() {
+    if ( $this->_ready ) {
+      return $this;
+    }
+
     // Wait for results
     $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
     do {
-      $slept = $sleeper->sleep()->getSleptSecs();
-      if ( $slept > 18000 ) { // 5 Hours
+      if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
         // TODO: Actually kill the query then throw exception.
         throw new \ThriftSQL\Exception( 'Hive Query Killed!' );
       }
