@@ -7,7 +7,6 @@ class ImpalaQuery implements \ThriftSQLQuery {
   private $_handle;
   private $_client;
   private $_ready;
-  private $_lastResponse;
 
   public function __construct( $queryStr, $client ) {
     $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
@@ -28,8 +27,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
     $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
     do {
-      $slept = $sleeper->sleep()->getSleptSecs();
-      if ( $slept > 18000 ) { // 5 Hours
+      if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
         // TODO: Actually kill the query then throw exception.
         throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
       }
@@ -53,47 +51,34 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
     } while (true);
 
-    // Wait for results by fetching some rows -- triggers query to run
-    $this->_fetchResponse( 2 );
-
     $this->_ready = true;
     return $this;
   }
 
   public function fetch( $maxRows ) {
-    $result = array();
     if ( !$this->_ready ) {
       throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->fetch()`" );
     }
     try {
-      if ( !( $this->_lastResponse instanceof \ThriftSQL\Results ) ) {
-        $this->_fetchResponse( $maxRows );
-      }
+      $sleeper = new \ThriftSQL\Utils\Sleeper();
+      $sleeper->reset();
 
-      $result = $this->_parseResponse( $this->_lastResponse );
-      $this->_lastResponse = null;
+      do {
+        $response = $this->_client->fetch( $this->_handle, false, $maxRows );
+        if ( $response->ready ) {
+          break;
+        }
+
+        if ( $sleeper->sleep()->getSleptSecs() > 60 ) { // 1 Minute
+          throw new \ThriftSQL\Exception( 'Impala Query took too long to fetch!' );
+        }
+
+      } while ( true );
+
+      return $this->_parseResponse( $response );
     } catch( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
-
-    return $result;
-  }
-
-  private function _fetchResponse( $maxRows ) {
-    $sleeper = new \ThriftSQL\Utils\Sleeper();
-    $sleeper->reset();
-
-    do {
-      $this->_lastResponse = $this->_client->fetch( $this->_handle, false, $maxRows );
-      if ( $this->_lastResponse->ready ) {
-        return;
-      }
-
-      if ( $sleeper->sleep()->getSleptSecs() > 60 ) { // 1 minute
-        throw new \ThriftSQL\Exception( 'Impala Query took too long to fetch!' );
-      }
-
-    } while ( true );
   }
 
   private function _parseResponse( $response ) {
