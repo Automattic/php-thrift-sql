@@ -1,3 +1,6 @@
 [submodule "src-thrift/thrift"]
 	path = src-thrift/thrift
 	url = https://github.com/apache/thrift.git
+[submodule "src-thrift/hive"]
+	path = src-thrift/hive
+	url = https://github.com/apache/hive.git
