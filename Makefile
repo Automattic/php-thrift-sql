@@ -50,5 +50,6 @@ clean:
 	rm -rf src/Thrift
 	rm -rf src/ThriftGenerated
 	rm -f src/.php-autoload-generator-cache.json
+	rm -f src/autoload.php
 
 .PHONY: default impala hive thrift submodules install clean
