@@ -1,6 +1,6 @@
 
---- build/gen-php/BeeswaxServiceClient.php
-+++ build/gen-php/BeeswaxServiceClient.php
+--- build/gen-php/ThriftGenerated/BeeswaxServiceClient.php
++++ build/gen-php/ThriftGenerated/BeeswaxServiceClient.php
 @@ -407,7 +407,7 @@
          throw new \Exception("get_results_metadata failed: unknown result");
      }
@@ -11,8 +11,8 @@
          $this->send_echo($s);
          return $this->recv_echo();
 
---- build/gen-php/BeeswaxServiceIf.php
-+++ build/gen-php/BeeswaxServiceIf.php
+--- build/gen-php/ThriftGenerated/BeeswaxServiceIf.php
++++ build/gen-php/ThriftGenerated/BeeswaxServiceIf.php
 @@ -79,7 +79,7 @@
       * @param string $s
       * @return string

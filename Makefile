@@ -26,14 +26,11 @@ endif
 #
 
 default: impala hive thrift
-	# Add namespace to generated files
-	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
-		sed -i .backup -e '2i\'$$'\n''namespace ThriftGenerated;'
-	rm build/gen-php/*.php.backup
 	# Apply patches
 	patch -s -p0 < build.patch
 	# Lint generated files
-	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 -P ${THREADS} \
+	find build/gen-php/ThriftGenerated -type f -name "*.php" -print0 | \
+		xargs -0L1 -P ${THREADS} \
 		php -l
 
 impala: submodules
@@ -44,20 +41,20 @@ impala: submodules
 	@rm -f build/share
 	ln -s ../src-thrift/thrift/contrib build/share
 	# Build Impala
-	thrift --gen php \
+	thrift --gen php:nsglobal=ThriftGenerated \
 		-o build \
 		-I build \
 		-I src-thrift/hive/metastore/if \
 		-I src-thrift/hive/service/if \
 		src-thrift/impala/common/thrift/ImpalaService.thrift
-	thrift --gen php \
+	thrift --gen php:nsglobal=ThriftGenerated \
 		-o build \
 		-I build \
 		-I src-thrift/hive/metastore/if \
 		src-thrift/impala/common/thrift/beeswax.thrift
 
 hive: submodules
-	thrift --gen php \
+	thrift --gen php:nsglobal=ThriftGenerated \
 		-o build \
 		-I src-thrift/hive \
 		src-thrift/hive/service/if/TCLIService.thrift
@@ -72,7 +69,7 @@ install: default
 	@rm -rf src/Thrift
 	cp -a src-thrift/thrift/lib/php/lib src/Thrift
 	@rm -rf src/ThriftGenerated
-	mv build/gen-php src/ThriftGenerated
+	mv build/gen-php/ThriftGenerated src/ThriftGenerated
 
 phar: install composer.lock
 	php -d phar.readonly=0 build.php
