@@ -12,7 +12,7 @@ class Iterator implements \Iterator {
   private $thriftSQL;
 
   /**
-   * @var \ThriftSQLQuery
+   * @var \ThriftSQL\Query
    */
   private $thriftSQLQuery;
 

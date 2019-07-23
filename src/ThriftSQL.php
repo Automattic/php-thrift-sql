@@ -9,10 +9,10 @@ abstract class ThriftSQL {
 
   /**
   * Sends a query string for execution on the server and returns a
-  * ThriftSQLQuery object for fetching the results manually.
+  * \ThriftSQL\Query object for fetching the results manually.
   *
   * @param string $queryStr
-  * @return \ThriftSQLQuery
+  * @return \ThriftSQL\Query
   * @throws \ThriftSQL\Exception
   */
   abstract public function query( $queryStr );

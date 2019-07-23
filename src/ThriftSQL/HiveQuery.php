@@ -2,7 +2,7 @@
 
 namespace ThriftSQL;
 
-class HiveQuery implements \ThriftSQLQuery {
+class HiveQuery implements \ThriftSQL\Query {
 
   private $_resp;
   private $_client;

@@ -2,7 +2,7 @@
 
 namespace ThriftSQL;
 
-class ImpalaQuery implements \ThriftSQLQuery {
+class ImpalaQuery implements \ThriftSQL\Query {
 
   private $_handle;
   private $_client;

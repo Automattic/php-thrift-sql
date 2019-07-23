@@ -1,4 +1,5 @@
 <?php
+
 namespace ThriftSQL;
 
 class Impala extends \ThriftSQL {

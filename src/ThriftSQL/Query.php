@@ -1,6 +1,8 @@
 <?php
 
-interface ThriftSQLQuery {
+namespace ThriftSQL;
+
+interface Query {
   /**
    * Waits for the query to complete execution
    * @return self
@@ -9,7 +11,7 @@ interface ThriftSQLQuery {
   public function wait();
 
   /**
-  * Fetches `n` rows from query results. 
+  * Fetches `n` rows from query results.
   * Before calling this method, you must call `wait()`.
   *
   * @param int $numRows
