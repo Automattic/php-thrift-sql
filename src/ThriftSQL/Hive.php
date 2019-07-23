@@ -45,12 +45,12 @@ class Hive extends \ThriftSQL {
         );
       }
       $this->_transport->open();
-      $this->_client = new \ThriftSQL\TCLIServiceClient(
+      $this->_client = new \ThriftGenerated\TCLIServiceClient(
         new \Thrift\Protocol\TBinaryProtocol(
           $this->_transport
         )
       );
-      $TOpenSessionReq = new \ThriftSQL\TOpenSessionReq();
+      $TOpenSessionReq = new \ThriftGenerated\TOpenSessionReq();
       if ( null !== $this->_username && null !== $this->_password ) {
         $TOpenSessionReq->username = $this->_username;
         $TOpenSessionReq->password = $this->_password;
@@ -70,7 +70,7 @@ class Hive extends \ThriftSQL {
   public function query( $queryStr ) {
     try {
       $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-      $response = $this->_client->ExecuteStatement( new \ThriftSQL\TExecuteStatementReq( array(
+      $response = $this->_client->ExecuteStatement( new \ThriftGenerated\TExecuteStatementReq( array(
         'sessionHandle' => $this->_sessionHandle,
         'statement' => $queryCleaner->clean( $queryStr ),
         'runAsync' => true,
@@ -78,7 +78,7 @@ class Hive extends \ThriftSQL {
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage() );
     }
-    if ( \ThriftSQL\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
+    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
       throw new \ThriftSQL\Exception( $response->status->errorMessage );
     }
     return new \ThriftSQL\HiveQuery( $response, $this->_client );
@@ -87,7 +87,7 @@ class Hive extends \ThriftSQL {
   public function disconnect() {
     // Close session if we have one
     if ( null !== $this->_sessionHandle ) {
-      $this->_client->CloseSession( new \ThriftSQL\TCloseSessionReq( array(
+      $this->_client->CloseSession( new \ThriftGenerated\TCloseSessionReq( array(
         'sessionHandle' => $this->_sessionHandle,
       ) ) );
     }

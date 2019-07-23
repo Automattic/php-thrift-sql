@@ -35,7 +35,7 @@ class Impala extends \ThriftSQL {
 
       $this->_transport->open();
 
-      $this->_client = new \ThriftSQL\ImpalaServiceClient(
+      $this->_client = new \ThriftGenerated\ImpalaServiceClient(
         new \Thrift\Protocol\TBinaryProtocol(
           $this->_transport
         )

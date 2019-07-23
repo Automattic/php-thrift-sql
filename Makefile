@@ -1,4 +1,8 @@
 default: impala hive thrift
+	# Add namespace to generated files
+	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
+		sed -i .backup -e '2i\'$$'\n''namespace ThriftGenerated;'
+	rm build/gen-php/*.php.backup
 	# Lint generated files
 	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
 		php -l

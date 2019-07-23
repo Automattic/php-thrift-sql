@@ -29,7 +29,7 @@ class HiveQuery implements \ThriftSQLQuery {
       }
       $TGetOperationStatusResp = $this
         ->_client
-        ->GetOperationStatus( new \ThriftSQL\TGetOperationStatusReq( array(
+        ->GetOperationStatus( new \ThriftGenerated\TGetOperationStatusReq( array(
           'operationHandle' => $this->_resp->operationHandle,
         ) ) );
       if ( $this->_isOperationFinished( $TGetOperationStatusResp->operationState ) ) {
@@ -40,13 +40,13 @@ class HiveQuery implements \ThriftSQLQuery {
       }
       // Query in error state
       throw new \ThriftSQL\Exception(
-        'Hive ' . \ThriftSQL\TOperationState::$__names[ $TGetOperationStatusResp->operationState ] . "\n" .
+        'Hive ' . \ThriftGenerated\TOperationState::$__names[ $TGetOperationStatusResp->operationState ] . "\n" .
         "Error Message: {$TGetOperationStatusResp->errorMessage}"
       );
     } while ( true );
 
     // Check for errors
-    if ( \ThriftSQL\TStatusCode::ERROR_STATUS === $this->_resp->status->statusCode ) {
+    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $this->_resp->status->statusCode ) {
       throw new \ThriftSQL\Exception( "HIVE QUERY ERROR: {$this->_resp->status->status->errorMessage}" );
     }
 
@@ -59,7 +59,7 @@ class HiveQuery implements \ThriftSQLQuery {
       throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->fetch()`" );
     }
     try {
-      $TFetchResultsResp = $this->_client->FetchResults( new \ThriftSQL\TFetchResultsReq( array(
+      $TFetchResultsResp = $this->_client->FetchResults( new \ThriftGenerated\TFetchResultsReq( array(
         'operationHandle' => $this->_resp->operationHandle,
         'maxRows' => $maxRows,
       ) ) );
@@ -67,7 +67,7 @@ class HiveQuery implements \ThriftSQLQuery {
        * NOTE: $TFetchResultsResp->hasMoreRows appears broken, it's always
        * false so one needs to keep fetching until they run out of data.
        */
-      if ( $TFetchResultsResp->results instanceof \ThriftSQL\TRowSet && !empty( $TFetchResultsResp->results->columns ) ) {
+      if ( $TFetchResultsResp->results instanceof \ThriftGenerated\TRowSet && !empty( $TFetchResultsResp->results->columns ) ) {
         return $this->_colsToRows( $TFetchResultsResp->results->columns );
       }
       return array();
@@ -112,16 +112,16 @@ class HiveQuery implements \ThriftSQLQuery {
   }
 
   private function _isOperationFinished( $state ) {
-    return ( \ThriftSQL\TOperationState::FINISHED_STATE == $state );
+    return ( \ThriftGenerated\TOperationState::FINISHED_STATE == $state );
   }
 
   private function _isOperationRunning( $state ) {
     return in_array(
       $state,
       array(
-        \ThriftSQL\TOperationState::INITIALIZED_STATE, // 0
-        \ThriftSQL\TOperationState::RUNNING_STATE,     // 1
-        \ThriftSQL\TOperationState::PENDING_STATE,     // 7
+        \ThriftGenerated\TOperationState::INITIALIZED_STATE, // 0
+        \ThriftGenerated\TOperationState::RUNNING_STATE,     // 1
+        \ThriftGenerated\TOperationState::PENDING_STATE,     // 7
       )
     );
   }

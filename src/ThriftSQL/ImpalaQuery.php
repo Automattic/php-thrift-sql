@@ -13,7 +13,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
     $this->_client = $client;
     $this->_ready = false;
-    $this->_handle = $this->_client->query( new \ThriftSQL\Query( array(
+    $this->_handle = $this->_client->query( new \ThriftGenerated\Query( array(
       'query' => $queryCleaner->clean( $queryStr ),
     ) ) );
   }
@@ -46,7 +46,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
       // Query in error state
       throw new \ThriftSQL\Exception(
-        'Query is in an error state: ' . \ThriftSQL\QueryState::$__names[ $state ]
+        'Query is in an error state: ' . \ThriftGenerated\QueryState::$__names[ $state ]
       );
 
     } while (true);
@@ -120,17 +120,17 @@ class ImpalaQuery implements \ThriftSQLQuery {
   }
 
   private function _isOperationFinished( $state ) {
-    return ( \ThriftSQL\QueryState::FINISHED == $state );
+    return ( \ThriftGenerated\QueryState::FINISHED == $state );
   }
 
   private function _isOperationRunning( $state ) {
     return in_array(
       $state,
       array(
-        \ThriftSQL\QueryState::CREATED,     // 0
-        \ThriftSQL\QueryState::INITIALIZED, // 1
-        \ThriftSQL\QueryState::COMPILED,    // 2
-        \ThriftSQL\QueryState::RUNNING,     // 3
+        \ThriftGenerated\QueryState::CREATED,     // 0
+        \ThriftGenerated\QueryState::INITIALIZED, // 1
+        \ThriftGenerated\QueryState::COMPILED,    // 2
+        \ThriftGenerated\QueryState::RUNNING,     // 3
       )
     );
   }
