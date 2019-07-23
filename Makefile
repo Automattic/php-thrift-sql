@@ -1,3 +1,20 @@
+
+#
+# Startup Checks / Utils
+#
+
+# Check for prerequisites exist in our PATH
+EXECUTABLES = php thrift composer
+EXECUTABLES_OK := $(foreach EXEC, $(EXECUTABLES), \
+	$(if $(shell which $(EXEC)),some string, \
+		$(error Could not find '$(EXEC)') \
+	) \
+)
+
+#
+# Make Targets
+#
+
 default: impala hive thrift
 	# Add namespace to generated files
 	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
