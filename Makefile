@@ -11,6 +11,16 @@ EXECUTABLES_OK := $(foreach EXEC, $(EXECUTABLES), \
 	) \
 )
 
+# Detect multithread limit
+PLATFORM=$(shell uname -s)
+ifeq ($(PLATFORM),Darwin)
+THREADS := $(shell sysctl -n hw.ncpu)
+else ifeq ($(PLATFORM),Linux)
+THREADS := $(shell nproc)
+else
+THREADS := 2
+endif
+
 #
 # Make Targets
 #
@@ -21,7 +31,7 @@ default: impala hive thrift
 		sed -i .backup -e '2i\'$$'\n''namespace ThriftGenerated;'
 	rm build/gen-php/*.php.backup
 	# Lint generated files
-	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
+	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 -P ${THREADS} \
 		php -l
 
 impala: submodules
