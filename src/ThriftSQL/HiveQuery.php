@@ -72,7 +72,7 @@ class HiveQuery implements \ThriftSQL\Query {
       }
       return array();
     } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
   }
 

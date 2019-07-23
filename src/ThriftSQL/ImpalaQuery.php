@@ -77,7 +77,7 @@ class ImpalaQuery implements \ThriftSQL\Query {
 
       return $this->_parseResponse( $response );
     } catch( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
   }
 

@@ -43,7 +43,7 @@ class Impala extends \ThriftSQL {
       );
     } catch( Exception $e ) {
       $this->_client = null;
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
 
     return $this;
@@ -53,7 +53,7 @@ class Impala extends \ThriftSQL {
     try {
       return new ImpalaQuery( $queryStr, $this->_client );
     } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
   }
 

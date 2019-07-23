@@ -62,7 +62,7 @@ class Hive extends \ThriftSQL {
         ->sessionHandle;
     } catch( Exception $e ) {
       $this->_sessionHandle = null;
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
     return $this;
   }
@@ -76,7 +76,7 @@ class Hive extends \ThriftSQL {
         'runAsync' => true,
       ) ) );
     } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
     if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
       throw new \ThriftSQL\Exception( $response->status->errorMessage );
