@@ -42,7 +42,9 @@ install: default
 	mv build/gen-php src/ThriftGenerated
 
 clean:
-	@mkdir -p build
 	rm -rf build
+	rm -rf src/Thrift
+	rm -rf src/ThriftGenerated
+	rm -f src/.php-autoload-generator-cache.json
 
 .PHONY: default impala hive thrift submodules install clean
