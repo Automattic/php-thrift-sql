@@ -74,6 +74,9 @@ install: default
 	@rm -rf src/ThriftGenerated
 	mv build/gen-php src/ThriftGenerated
 
+phar: install
+	php -d phar.readonly=0 build.php
+
 clean:
 	rm -rf build
 	rm -rf src/Thrift
@@ -81,4 +84,4 @@ clean:
 	rm -f src/.php-autoload-generator-cache.json
 	rm -f src/autoload.php
 
-.PHONY: default impala hive thrift submodules install clean
+.PHONY: default impala hive thrift submodules install phar clean

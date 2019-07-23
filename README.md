@@ -111,8 +111,8 @@ In order to rebuild this library you will need [Composer](https://getcomposer.or
 $ composer install
 ```
 
-Once dev tools are installed the phar can be rebuilt using the build script:
+Once dev tools are installed the phar can be rebuilt using `make`:
 
 ```
-$ php -d phar.readonly=0 build.php
+$ make clean && make phar
 ```
