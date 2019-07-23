@@ -1,6 +1,6 @@
 default: impala hive thrift
 	# Lint generated files
-	find gen-php -type f -name "*.php" -print0 | xargs -0L1 \
+	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
 		php -l
 
 impala: submodules
