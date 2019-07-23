@@ -36,9 +36,9 @@ submodules:
 	@mkdir -p build
 
 install: default
-	rm -rf src/Thrift
+	@rm -rf src/Thrift
 	cp -a src-thrift/thrift/lib/php/lib src/Thrift
-	rm -rf src/ThriftGenerated
+	@rm -rf src/ThriftGenerated
 	mv build/gen-php src/ThriftGenerated
 
 clean:
