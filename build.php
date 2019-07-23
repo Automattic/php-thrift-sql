@@ -36,5 +36,7 @@ EOF;
   $phar = new Phar( $pharFilename );
   $phar->buildFromDirectory( __DIR__ . '/src' );
   $phar->setStub( $stub );
+  $phar->setSignatureAlgorithm( Phar::SHA256 );
+  $phar->compressFiles( Phar::GZ );
 
   echo "Built!\n";
