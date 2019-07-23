@@ -29,7 +29,11 @@
 EOF;
 
   // Create Phar
-  $phar = new Phar( 'ThriftSQL.phar', null, 'ThriftSQL.phar' );
+  $pharFilename = "ThriftSQL.phar";
+  if ( file_exists( $pharFilename ) ) {
+    unlink( $pharFilename );
+  }
+  $phar = new Phar( $pharFilename );
   $phar->buildFromDirectory( __DIR__ . '/src' );
   $phar->setStub( $stub );
 
