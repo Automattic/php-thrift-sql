@@ -4,3 +4,6 @@
 [submodule "src-thrift/hive"]
 	path = src-thrift/hive
 	url = https://github.com/apache/hive.git
+[submodule "src-thrift/impala"]
+	path = src-thrift/impala
+	url = https://github.com/apache/impala.git
