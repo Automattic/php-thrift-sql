@@ -1,3 +1,5 @@
-/vendor/
 .php-autoload-generator-cache.json
+/build/
 /src/Thrift/
+/src/ThriftGenerated/
+/vendor/
