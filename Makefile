@@ -30,6 +30,8 @@ default: impala hive thrift
 	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 \
 		sed -i .backup -e '2i\'$$'\n''namespace ThriftGenerated;'
 	rm build/gen-php/*.php.backup
+	# Apply patches
+	patch -s -p0 < build.patch
 	# Lint generated files
 	find build/gen-php -type f -name "*.php" -print0 | xargs -0L1 -P ${THREADS} \
 		php -l
