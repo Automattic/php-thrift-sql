@@ -105,11 +105,7 @@ print_r( $impalaTables );
 Developing & Contributing
 -------------------------
 
-In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies:
-
-```
-$ composer install
-```
+In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies.
 
 Once dev tools are installed the phar can be rebuilt using `make`:
 

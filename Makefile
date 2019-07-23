@@ -74,7 +74,7 @@ install: default
 	@rm -rf src/ThriftGenerated
 	mv build/gen-php src/ThriftGenerated
 
-phar: install
+phar: install composer.lock
 	php -d phar.readonly=0 build.php
 
 clean:
@@ -83,5 +83,8 @@ clean:
 	rm -rf src/ThriftGenerated
 	rm -f src/.php-autoload-generator-cache.json
 	rm -f src/autoload.php
+
+composer.lock: composer.json
+	composer install
 
 .PHONY: default impala hive thrift submodules install phar clean
