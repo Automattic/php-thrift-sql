@@ -8,13 +8,14 @@ class ImpalaQuery implements \ThriftSQL\Query {
   private $_client;
   private $_ready;
 
-  public function __construct( $queryStr, $client ) {
+  public function __construct( $queryStr, $usernameStr, \ThriftGenerated\ImpalaServiceIf $client ) {
     $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
 
     $this->_client = $client;
     $this->_ready = false;
     $this->_handle = $this->_client->query( new \ThriftGenerated\Query( array(
       'query' => $queryCleaner->clean( $queryStr ),
+      'hadoop_user' => $usernameStr,
     ) ) );
   }
 

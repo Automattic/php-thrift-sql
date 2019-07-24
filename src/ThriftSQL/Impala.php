@@ -15,8 +15,8 @@ class Impala extends \ThriftSQL {
   public function __construct( $host, $port = 21000, $username = null, $password = null, $timeout = null ) {
     $this->_host = $host;
     $this->_port = $port;
-    $this->_username = $username; // not used
-    $this->_password = $password; // not used
+    $this->_username = $username;
+    $this->_password = $password; // not used -- we impersonate on the query level
     $this->_timeout = $timeout;
   }
 
@@ -51,7 +51,7 @@ class Impala extends \ThriftSQL {
 
   public function query( $queryStr ) {
     try {
-      return new ImpalaQuery( $queryStr, $this->_client );
+      return new ImpalaQuery( $queryStr, $this->_username, $this->_client );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
