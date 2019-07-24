@@ -8,7 +8,7 @@ class HiveQuery implements \ThriftSQL\Query {
   private $_client;
   private $_ready;
 
-  public function __construct( $response, $client ) {
+  public function __construct( $response, \ThriftGenerated\TCLIServiceIf $client ) {
     $this->_resp = $response;
     $this->_ready = false;
     $this->_client = $client;
@@ -24,9 +24,17 @@ class HiveQuery implements \ThriftSQL\Query {
     $sleeper->reset();
     do {
       if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
-        // TODO: Actually kill the query then throw exception.
-        throw new \ThriftSQL\Exception( 'Hive Query Killed!' );
+        try {
+          // Fire and forget cancel operation, ignore the returned:
+          // \ThriftGenerated\TCancelOperationResp
+          $this->_client->CancelOperation( new \ThriftGenerated\TCancelOperationReq( array(
+            'operationHandle' => $this->_resp->operationHandle,
+          ) ) );
+        }  finally {
+          throw new \ThriftSQL\Exception( 'Hive Query Killed!' );
+        }
       }
+
       $TGetOperationStatusResp = $this
         ->_client
         ->GetOperationStatus( new \ThriftGenerated\TGetOperationStatusReq( array(

@@ -29,8 +29,13 @@ class ImpalaQuery implements \ThriftSQL\Query {
     $sleeper->reset();
     do {
       if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
-        // TODO: Actually kill the query then throw exception.
-        throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
+        try {
+          // Fire and forget cancel operation, ignore the returned:
+          // \ThriftGenerated\TStatus
+          $this->_client->Cancel( $this->_handle );
+        }  finally {
+          throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
+        }
       }
 
       $state = $this
