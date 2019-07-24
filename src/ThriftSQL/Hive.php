@@ -31,6 +31,15 @@ class Hive extends \ThriftSQL {
     if ( null !== $this->_sessionHandle ) {
       return $this;
     }
+
+    // Make sure we have auth info set
+    if ( empty( $this->_username ) ) {
+      $this->_username = self::USERNAME_DEFAULT;
+    }
+    if ( empty( $this->_password ) ) {
+      $this->_password = 'ANY-PASSWORD';
+    }
+
     try {
       $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
       if ( null !== $this->_timeout ) {
@@ -51,10 +60,9 @@ class Hive extends \ThriftSQL {
         )
       );
       $TOpenSessionReq = new \ThriftGenerated\TOpenSessionReq();
-      if ( null !== $this->_username && null !== $this->_password ) {
-        $TOpenSessionReq->username = $this->_username;
-        $TOpenSessionReq->password = $this->_password;
-      }
+      $TOpenSessionReq->username = $this->_username;
+      $TOpenSessionReq->password = $this->_password;
+
       // Ok, let's try to start a session
       $this->_sessionHandle = $this
         ->_client

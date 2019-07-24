@@ -1,6 +1,9 @@
 <?php
 
 abstract class ThriftSQL {
+
+  const USERNAME_DEFAULT = 'php-thrift-sql';
+
   /**
   * @return self
   * @throws \ThriftSQL\Exception

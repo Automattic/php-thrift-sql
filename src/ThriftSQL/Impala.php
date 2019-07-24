@@ -26,6 +26,11 @@ class Impala extends \ThriftSQL {
       return $this;
     }
 
+    // Make sure we have a username set
+    if ( empty( $this->_username ) ) {
+      $this->_username = self::USERNAME_DEFAULT;
+    }
+
     try {
       $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
 
