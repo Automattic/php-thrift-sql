@@ -8,7 +8,7 @@ class HiveQuery implements \ThriftSQL\Query {
   private $_client;
   private $_ready;
 
-  public function __construct( $response, \ThriftGenerated\TCLIServiceIf $client ) {
+  public function __construct( \ThriftGenerated\TExecuteStatementResp $response, \ThriftGenerated\TCLIServiceIf $client ) {
     $this->_resp = $response;
     $this->_ready = false;
     $this->_client = $client;
@@ -81,6 +81,17 @@ class HiveQuery implements \ThriftSQL\Query {
       return array();
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+    }
+  }
+
+  public function close() {
+    try {
+      // Fire close operation and ignore return
+      $this->_client->CloseOperation( new \ThriftGenerated\TCloseOperationReq( array(
+        'operationHandle' => $this->_resp->operationHandle,
+      ) ) );
+    } finally {
+      return $this;
     }
   }
 

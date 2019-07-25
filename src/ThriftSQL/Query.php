@@ -19,4 +19,10 @@ interface Query {
   * @throws \ThriftSQL\Exception
   */
   public function fetch( $numRows );
+
+  /**
+   * Close the current query context.
+   * @return self
+   */
+  public function close();
 }

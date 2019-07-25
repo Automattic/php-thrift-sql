@@ -87,6 +87,15 @@ class ImpalaQuery implements \ThriftSQL\Query {
     }
   }
 
+  public function close() {
+    try {
+      // Fire close operation and ignore exceptions
+      $this->_client->close( $this->_handle );
+    } finally {
+      return $this;
+    }
+  }
+
   private function _parseResponse( $response ) {
     $result = array();
     foreach ( $response->data as $row => $rawValues ) {
