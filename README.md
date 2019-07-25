@@ -117,7 +117,7 @@ print_r( $impalaTables );
 Developing & Contributing
 -------------------------
 
-In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies.
+In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies and [Apache Thrift](https://thrift.apache.org/) to compile client libraries from the Thrift interface definition files.
 
 Once dev tools are installed the phar can be rebuilt using `make`:
 
