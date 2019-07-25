@@ -75,6 +75,10 @@ install: default
 phar: install composer.lock
 	php -d phar.readonly=0 build.php
 
+clean-dev: clean
+	rm -rf vendor
+	rm -f composer.lock
+
 clean:
 	rm -rf build
 	rm -rf src/Thrift
@@ -85,4 +89,4 @@ clean:
 composer.lock: composer.json
 	composer install
 
-.PHONY: default impala hive thrift submodules install phar clean
+.PHONY: default impala hive thrift submodules install phar clean-dev clean
