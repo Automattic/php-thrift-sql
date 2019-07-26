@@ -8,6 +8,18 @@ Currently the following engines are supported:
 * *Hive* -- Over the HiveServer2 Thrift interface, SASL is enabled by default so username and password must be provided however this can be turned off with the `setSasl()` method before calling `connect()`.
 * *Impala* -- Over the Impala Service Thrift interface which extends the Beeswax protocol.
 
+Version Compatibility
+---------------------
+
+This library is currently compiled against the Thrift definitions of the following database versions:
+
+- Apache Hive `1.1.0` ([Mar 2015](https://github.com/apache/hive/tree/release-1.1.0))
+- Apache Impala `2.12.0` ([Apr 2018](https://github.com/apache/impala/tree/2.12.0))
+
+Using the compiler and base PHP classes of:
+
+- Apache Thrift `0.12.0` ([Oct 2018](https://github.com/apache/thrift/tree/v0.12.0))
+
 Usage Example
 -------------
 
@@ -105,14 +117,10 @@ print_r( $impalaTables );
 Developing & Contributing
 -------------------------
 
-In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies:
+In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies and [Apache Thrift](https://thrift.apache.org/) to compile client libraries from the Thrift interface definition files.
+
+Once dev tools are installed the phar can be rebuilt using `make`:
 
 ```
-$ composer install
-```
-
-Once dev tools are installed the phar can be rebuilt using the build script:
-
-```
-$ php -d phar.readonly=0 build.php
+$ make clean && make phar
 ```

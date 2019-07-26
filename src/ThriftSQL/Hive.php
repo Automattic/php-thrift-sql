@@ -31,6 +31,15 @@ class Hive extends \ThriftSQL {
     if ( null !== $this->_sessionHandle ) {
       return $this;
     }
+
+    // Make sure we have auth info set
+    if ( empty( $this->_username ) ) {
+      $this->_username = self::USERNAME_DEFAULT;
+    }
+    if ( empty( $this->_password ) ) {
+      $this->_password = 'ANY-PASSWORD';
+    }
+
     try {
       $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
       if ( null !== $this->_timeout ) {
@@ -45,16 +54,15 @@ class Hive extends \ThriftSQL {
         );
       }
       $this->_transport->open();
-      $this->_client = new \ThriftSQL\TCLIServiceClient(
+      $this->_client = new \ThriftGenerated\TCLIServiceClient(
         new \Thrift\Protocol\TBinaryProtocol(
           $this->_transport
         )
       );
-      $TOpenSessionReq = new \ThriftSQL\TOpenSessionReq();
-      if ( null !== $this->_username && null !== $this->_password ) {
-        $TOpenSessionReq->username = $this->_username;
-        $TOpenSessionReq->password = $this->_password;
-      }
+      $TOpenSessionReq = new \ThriftGenerated\TOpenSessionReq();
+      $TOpenSessionReq->username = $this->_username;
+      $TOpenSessionReq->password = $this->_password;
+
       // Ok, let's try to start a session
       $this->_sessionHandle = $this
         ->_client
@@ -62,7 +70,7 @@ class Hive extends \ThriftSQL {
         ->sessionHandle;
     } catch( Exception $e ) {
       $this->_sessionHandle = null;
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
     return $this;
   }
@@ -70,15 +78,15 @@ class Hive extends \ThriftSQL {
   public function query( $queryStr ) {
     try {
       $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-      $response = $this->_client->ExecuteStatement( new \ThriftSQL\TExecuteStatementReq( array(
+      $response = $this->_client->ExecuteStatement( new \ThriftGenerated\TExecuteStatementReq( array(
         'sessionHandle' => $this->_sessionHandle,
         'statement' => $queryCleaner->clean( $queryStr ),
         'runAsync' => true,
       ) ) );
     } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
-    if ( \ThriftSQL\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
+    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
       throw new \ThriftSQL\Exception( $response->status->errorMessage );
     }
     return new \ThriftSQL\HiveQuery( $response, $this->_client );
@@ -87,7 +95,7 @@ class Hive extends \ThriftSQL {
   public function disconnect() {
     // Close session if we have one
     if ( null !== $this->_sessionHandle ) {
-      $this->_client->CloseSession( new \ThriftSQL\TCloseSessionReq( array(
+      $this->_client->CloseSession( new \ThriftGenerated\TCloseSessionReq( array(
         'sessionHandle' => $this->_sessionHandle,
       ) ) );
     }

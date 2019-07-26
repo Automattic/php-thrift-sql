@@ -12,7 +12,7 @@ class Iterator implements \Iterator {
   private $thriftSQL;
 
   /**
-   * @var \ThriftSQLQuery
+   * @var \ThriftSQL\Query
    */
   private $thriftSQLQuery;
 
@@ -76,8 +76,16 @@ class Iterator implements \Iterator {
       return true;
     }
 
+    // Buffer is empty let's refill it
     $this->buffer = $this->thriftSQLQuery->fetch( self::BUFFER_ROWS );
-    return ( ! empty( $this->buffer ) );
+
+    // Buffer is full again!
+    if ( ! empty( $this->buffer ) ) {
+      return true;
+    }
+
+    $this->thriftSQLQuery->close();
+    return false;
   }
 
   /**

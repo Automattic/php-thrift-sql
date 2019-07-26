@@ -1,3 +1,11 @@
 src                 export-ignore
+src-thrift          export-ignore
+.editorconfig       export-ignore
+.gitattributes      export-ignore
+.gitignore          export-ignore
+.gitmodules         export-ignore
 build.php           export-ignore
 example.php         export-ignore
+LICENSE             export-ignore
+Makefile            export-ignore
+README.md           export-ignore

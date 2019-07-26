@@ -14,7 +14,7 @@
     }
   ],
   "require": {
-    "php": ">=5.3.0"
+    "php": ">=5.5.0"
   },
   "autoload": {
     "files": [ "ThriftSQL.phar" ]
@@ -26,6 +26,6 @@
     }
   ],
   "require-dev": {
-    "jesseschalken/autoload-generator": "^0.2.3"
+    "theseer/autoload": "1.*"
   }
 }

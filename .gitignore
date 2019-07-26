@@ -1,2 +1,6 @@
+/composer.lock
+/build/
+/src/autoload.php
+/src/Thrift/
+/src/ThriftGenerated/
 /vendor/
-.php-autoload-generator-cache.json

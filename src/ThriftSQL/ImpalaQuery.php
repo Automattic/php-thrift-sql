@@ -2,19 +2,20 @@
 
 namespace ThriftSQL;
 
-class ImpalaQuery implements \ThriftSQLQuery {
+class ImpalaQuery implements \ThriftSQL\Query {
 
   private $_handle;
   private $_client;
   private $_ready;
 
-  public function __construct( $queryStr, $client ) {
+  public function __construct( $queryStr, $usernameStr, \ThriftGenerated\ImpalaServiceIf $client ) {
     $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
 
     $this->_client = $client;
     $this->_ready = false;
-    $this->_handle = $this->_client->query( new \ThriftSQL\Query( array(
+    $this->_handle = $this->_client->query( new \ThriftGenerated\Query( array(
       'query' => $queryCleaner->clean( $queryStr ),
+      'hadoop_user' => $usernameStr,
     ) ) );
   }
 
@@ -28,8 +29,13 @@ class ImpalaQuery implements \ThriftSQLQuery {
     $sleeper->reset();
     do {
       if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
-        // TODO: Actually kill the query then throw exception.
-        throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
+        try {
+          // Fire and forget cancel operation, ignore the returned:
+          // \ThriftGenerated\TStatus
+          $this->_client->Cancel( $this->_handle );
+        }  finally {
+          throw new \ThriftSQL\Exception( 'Impala Query Killed!' );
+        }
       }
 
       $state = $this
@@ -46,7 +52,7 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
       // Query in error state
       throw new \ThriftSQL\Exception(
-        'Query is in an error state: ' . \ThriftSQL\QueryState::$__names[ $state ]
+        'Query is in an error state: ' . \ThriftGenerated\QueryState::$__names[ $state ]
       );
 
     } while (true);
@@ -77,7 +83,16 @@ class ImpalaQuery implements \ThriftSQLQuery {
 
       return $this->_parseResponse( $response );
     } catch( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage() );
+      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+    }
+  }
+
+  public function close() {
+    try {
+      // Fire close operation and ignore exceptions
+      $this->_client->close( $this->_handle );
+    } finally {
+      return $this;
     }
   }
 
@@ -120,17 +135,17 @@ class ImpalaQuery implements \ThriftSQLQuery {
   }
 
   private function _isOperationFinished( $state ) {
-    return ( \ThriftSQL\QueryState::FINISHED == $state );
+    return ( \ThriftGenerated\QueryState::FINISHED == $state );
   }
 
   private function _isOperationRunning( $state ) {
     return in_array(
       $state,
       array(
-        \ThriftSQL\QueryState::CREATED,     // 0
-        \ThriftSQL\QueryState::INITIALIZED, // 1
-        \ThriftSQL\QueryState::COMPILED,    // 2
-        \ThriftSQL\QueryState::RUNNING,     // 3
+        \ThriftGenerated\QueryState::CREATED,     // 0
+        \ThriftGenerated\QueryState::INITIALIZED, // 1
+        \ThriftGenerated\QueryState::COMPILED,    // 2
+        \ThriftGenerated\QueryState::RUNNING,     // 3
       )
     );
   }
