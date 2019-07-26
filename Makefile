@@ -26,9 +26,6 @@ endif
 #
 
 default: impala hive thrift
-	# Apply patches
-	patch -s -p0 < build.patch
-	find build/gen-php -type f -name "*.orig" -delete
 	# Lint generated files
 	find build/gen-php/ThriftGenerated -type f -name "*.php" -print0 | \
 		xargs -0L1 -P ${THREADS} \
@@ -73,6 +70,7 @@ install: default
 	mv build/gen-php/ThriftGenerated src/ThriftGenerated
 
 phar: install composer.lock
+	vendor/bin/phpab --nolower --output src/autoload.php --basedir src src
 	php -d phar.readonly=0 build.php
 
 clean-dev: clean
@@ -83,7 +81,6 @@ clean:
 	rm -rf build
 	rm -rf src/Thrift
 	rm -rf src/ThriftGenerated
-	rm -f src/.php-autoload-generator-cache.json
 	rm -f src/autoload.php
 
 composer.lock: composer.json

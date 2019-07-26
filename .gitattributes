@@ -4,7 +4,6 @@ src-thrift          export-ignore
 .gitattributes      export-ignore
 .gitignore          export-ignore
 .gitmodules         export-ignore
-build.patch         export-ignore
 build.php           export-ignore
 example.php         export-ignore
 LICENSE             export-ignore

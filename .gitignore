@@ -1,6 +1,5 @@
 /composer.lock
 /build/
-/src/.php-autoload-generator-cache.json
 /src/autoload.php
 /src/Thrift/
 /src/ThriftGenerated/
