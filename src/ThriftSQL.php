@@ -2,6 +2,7 @@
 
 abstract class ThriftSQL {
 
+  const VERSION = '0.3.1';
   const USERNAME_DEFAULT = 'php-thrift-sql';
 
   /**
