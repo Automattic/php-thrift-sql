@@ -1,20 +1,24 @@
 {
   "name": "automattic/php-thrift-sql",
+  "description": "A PHP library for connecting to Hive or Impala over Thrift",
   "type": "library",
-  "description": "PHP Thrift Client for Impala and Hive Queries",
   "keywords": [ "Thrift", "SQL", "Database", "Hive", "Impala" ],
   "homepage": "https://github.com/Automattic/php-thrift-sql",
+  "readme": "README.md",
   "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Xiao Yu",
       "email": "xyu@automattic.com",
-      "homepage": "http://xyu.io",
+      "homepage": "https://xyu.io",
       "role": "Developer"
     }
   ],
   "require": {
     "php": ">=5.5.0"
+  },
+  "require-dev": {
+    "theseer/autoload": "1.*"
   },
   "autoload": {
     "files": [ "ThriftSQL.phar" ]
@@ -24,8 +28,5 @@
       "type": "vcs",
       "url": "https://github.com/Automattic/php-thrift-sql"
     }
-  ],
-  "require-dev": {
-    "theseer/autoload": "1.*"
-  }
+  ]
 }
