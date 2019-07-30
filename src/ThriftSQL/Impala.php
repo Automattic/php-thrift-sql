@@ -56,7 +56,8 @@ class Impala extends \ThriftSQL {
 
   public function query( $queryStr ) {
     try {
-      return new ImpalaQuery( $queryStr, $this->_username, $this->_client );
+      $query = new ImpalaQuery( $this->_username, $this->_client );
+      return $query->exec( $queryStr );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }

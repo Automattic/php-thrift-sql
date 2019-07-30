@@ -4,6 +4,13 @@ namespace ThriftSQL;
 
 interface Query {
   /**
+   * Starts executing the given query
+   * @return self
+   * @throws \ThriftSQL\Exception
+   */
+  public function exec( $queryStr );
+
+  /**
    * Waits for the query to complete execution
    * @return self
    * @throws \ThriftSQL\Exception
