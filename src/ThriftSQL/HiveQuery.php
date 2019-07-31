@@ -4,14 +4,31 @@ namespace ThriftSQL;
 
 class HiveQuery implements \ThriftSQL\Query {
 
-  private $_resp;
   private $_client;
+  private $_sessionHandle;
   private $_ready;
+  private $_resp;
 
-  public function __construct( \ThriftGenerated\TExecuteStatementResp $response, \ThriftGenerated\TCLIServiceIf $client ) {
-    $this->_resp = $response;
-    $this->_ready = false;
+  public function __construct( \ThriftGenerated\TCLIServiceIf $client, \ThriftGenerated\TSessionHandle $sessionHandle ) {
     $this->_client = $client;
+    $this->_sessionHandle = $sessionHandle;
+  }
+
+  public function exec( $queryStr ) {
+    $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
+
+    $this->_ready = false;
+    $this->_resp = $this->_client->ExecuteStatement( new \ThriftGenerated\TExecuteStatementReq( array(
+      'sessionHandle' => $this->_sessionHandle,
+      'statement' => $queryCleaner->clean( $queryStr ),
+      'runAsync' => true,
+    ) ) );
+
+    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $this->_resp->status->statusCode ) {
+      throw new \ThriftSQL\Exception( $this->_resp->status->errorMessage );
+    }
+
+    return $this;
   }
 
   public function wait() {

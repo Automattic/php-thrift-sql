@@ -39,6 +39,7 @@ $hiveTables = $hive
 $impala = new \ThriftSQL\Impala( 'impala.host.local' );
 $impalaTables = $impala
   ->connect()
+  ->setOption( 'MEM_LIMIT', '2gb' ) // optionally set some query options
   ->getIterator( 'SHOW TABLES' );
 
 // Execute the Hive query and iterate over the result set

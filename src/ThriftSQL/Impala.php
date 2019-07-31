@@ -9,6 +9,7 @@ class Impala extends \ThriftSQL {
   private $_username;
   private $_password;
   private $_timeout;
+  private $_options;
   private $_transport;
   private $_client;
 
@@ -18,6 +19,25 @@ class Impala extends \ThriftSQL {
     $this->_username = $username;
     $this->_password = $password; // not used -- we impersonate on the query level
     $this->_timeout = $timeout;
+    $this->_options = array();
+  }
+
+  public function setOption( $key, $value ) {
+    // Normalize key
+    $key = strtoupper( $key );
+
+    if ( null === $value ) {
+      // NULL means unset
+      unset( $this->_options[ $key ] );
+    } elseif ( true === $value ) {
+      $this->_options[ $key ] = 'true';
+    } elseif ( false === $value ) {
+      $this->_options[ $key ] = 'false';
+    } else {
+      $this->_options[ $key ] = (string) $value;
+    }
+
+    return $this;
   }
 
   public function connect() {
@@ -56,7 +76,12 @@ class Impala extends \ThriftSQL {
 
   public function query( $queryStr ) {
     try {
-      return new ImpalaQuery( $queryStr, $this->_username, $this->_client );
+      $options = array();
+      foreach ( $this->_options as $key => $value ) {
+        $options[] = "{$key}={$value}";
+      }
+      $query = new ImpalaQuery( $this->_username, $options, $this->_client );
+      return $query->exec( $queryStr );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }

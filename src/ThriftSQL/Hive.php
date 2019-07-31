@@ -77,19 +77,11 @@ class Hive extends \ThriftSQL {
 
   public function query( $queryStr ) {
     try {
-      $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-      $response = $this->_client->ExecuteStatement( new \ThriftGenerated\TExecuteStatementReq( array(
-        'sessionHandle' => $this->_sessionHandle,
-        'statement' => $queryCleaner->clean( $queryStr ),
-        'runAsync' => true,
-      ) ) );
+      $query = new HiveQuery( $this->_client, $this->_sessionHandle );
+      return $query->exec( $queryStr );
     } catch ( Exception $e ) {
       throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
     }
-    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $response->status->statusCode ) {
-      throw new \ThriftSQL\Exception( $response->status->errorMessage );
-    }
-    return new \ThriftSQL\HiveQuery( $response, $this->_client );
   }
 
   public function disconnect() {

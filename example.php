@@ -13,6 +13,8 @@
   $impala = new \ThriftSQL\Impala( 'impala.host.local' );
   $impalaTables = $impala
     ->connect()
+    ->setOption( 'REQUEST_POOL', 'php' )
+    ->setOption( 'MEM_LIMIT', '256mb' )
     ->getIterator( 'SHOW TABLES' );
 
   // Execute the Hive query and iterate over the result set
