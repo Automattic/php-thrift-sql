@@ -2,22 +2,22 @@
 
 namespace ThriftSQL;
 
-class ResultRow implements \ArrayAccess
+class ResultRowSchema implements \ArrayAccess
 {
-  private $_row;
-  private $_schema;
+  private $row;
+  private $schema;
 
   public function __construct($schema, $row)
   {
-    $this->_row = $row;
-    $this->_schema = $schema;
+    $this->row = $row;
+    $this->schema = $schema;
   }
 
   public function schemaArray()
   {
     $r = [];
-    foreach ($this->_schema as $k=>$i) {
-      $r[$k] = $this->_row[$i];
+    foreach ($this->schema as $k=> $i) {
+      $r[$k] = $this->row[$i];
     }
     return $r;
   }
@@ -25,9 +25,9 @@ class ResultRow implements \ArrayAccess
   private function offsetToIndex($offset)
   {
     if(is_int($offset)) {
-      return 0 <= $offset && $offset < count($this->_row);
+      return 0 <= $offset && $offset < count($this->row) ? $offset : null;
     } else if (is_string($offset)) {
-      return ($this->_schema[strtolower($offset)] ?? null);
+      return ($this->schema[strtolower($offset)] ?? null);
     }
     return null;
   }
@@ -36,7 +36,7 @@ class ResultRow implements \ArrayAccess
    */
   public function offsetExists($offset)
   {
-    return array_key_exists($this->offsetToIndex($offset), $this->_row);
+    return array_key_exists($this->offsetToIndex($offset), $this->row);
   }
 
   /**
@@ -46,7 +46,7 @@ class ResultRow implements \ArrayAccess
   {
     $i = $this->offsetToIndex($offset);
     if ($i !== null) {
-      return $this->_row[$i];
+      return $this->row[$i];
     }
     throw new \RuntimeException("invalid row key: $offset");
   }

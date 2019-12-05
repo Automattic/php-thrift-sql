@@ -2,38 +2,49 @@
 
 namespace ThriftSQL;
 
-class HiveQuery implements \ThriftSQL\Query {
+class HiveQuery extends \ThriftSQL\Query
+{
 
-  private $_client;
-  private $_sessionHandle;
-  private $_ready;
-  private $_resp;
-  private $_schema;
+  /** @var HiveSessionInternal */
+  private $sessionInternal;
 
-  public function __construct( \ThriftGenerated\TCLIServiceIf $client, \ThriftGenerated\TSessionHandle $sessionHandle ) {
-    $this->_client = $client;
-    $this->_sessionHandle = $sessionHandle;
+  /** @var string */
+  private $statement;
+
+  /** @var bool */
+  private $ready;
+
+  /** @var \ThriftGenerated\TExecuteStatementResp */
+  private $resp;
+
+  /** @var array */
+  private $schema;
+
+  public function __construct($sessionInternal, $statement)
+  {
+    $this->sessionInternal = $sessionInternal;
+    $this->statement = $statement;
   }
 
-  public function exec( $queryStr ) {
-    $queryCleaner = new \ThriftSQL\Utils\QueryCleaner();
-
-    $this->_ready = false;
-    $this->_resp = $this->_client->ExecuteStatement( new \ThriftGenerated\TExecuteStatementReq( array(
-      'sessionHandle' => $this->_sessionHandle,
-      'statement' => $queryCleaner->clean( $queryStr ),
+  public function exec()
+  {
+    $this->ready = false;
+    $this->resp = $this->sessionInternal->client->ExecuteStatement(new \ThriftGenerated\TExecuteStatementReq(array(
+      'sessionHandle' => $this->sessionInternal->session,
+      'statement' => $this->statement,
       'runAsync' => true,
-    ) ) );
+    )));
 
-    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $this->_resp->status->statusCode ) {
-      throw new \ThriftSQL\Exception( $this->_resp->status->errorMessage );
+    if (\ThriftGenerated\TStatusCode::ERROR_STATUS === $this->resp->status->statusCode) {
+      throw new \ThriftSQL\ThriftSQLException($this->resp->status->errorMessage);
     }
 
     return $this;
   }
 
-  public function wait() {
-    if ( $this->_ready ) {
+  public function wait()
+  {
+    if ($this->ready) {
       return $this;
     }
 
@@ -41,137 +52,137 @@ class HiveQuery implements \ThriftSQL\Query {
     $sleeper = new \ThriftSQL\Utils\Sleeper();
     $sleeper->reset();
     do {
-      if ( $sleeper->sleep()->getSleptSecs() > 18000 ) { // 5 Hours
+      if ($sleeper->sleep()->getSleptSecs() > 18000) { // 5 Hours
         try {
           // Fire and forget cancel operation, ignore the returned:
           // \ThriftGenerated\TCancelOperationResp
-          $this->_client->CancelOperation( new \ThriftGenerated\TCancelOperationReq( array(
-            'operationHandle' => $this->_resp->operationHandle,
-          ) ) );
-        }  finally {
-          throw new \ThriftSQL\Exception( 'Hive Query Killed!' );
+          $this->sessionInternal->client->CancelOperation(new \ThriftGenerated\TCancelOperationReq(array(
+            'operationHandle' => $this->resp->operationHandle,
+          )));
+        } finally {
+          throw new \ThriftSQL\ThriftSQLException('Hive Query Killed!');
         }
       }
 
-      $TGetOperationStatusResp = $this
-        ->_client
-        ->GetOperationStatus( new \ThriftGenerated\TGetOperationStatusReq( array(
-          'operationHandle' => $this->_resp->operationHandle,
-        ) ) );
-      if ( $this->_isOperationFinished( $TGetOperationStatusResp->operationState ) ) {
+      $TGetOperationStatusResp = $this->sessionInternal->client
+        ->GetOperationStatus(new \ThriftGenerated\TGetOperationStatusReq(array(
+          'operationHandle' => $this->resp->operationHandle,
+        )));
+      if ($this->checkOperationFinished($TGetOperationStatusResp->operationState)) {
         break;
       }
-      if ( $this->_isOperationRunning( $TGetOperationStatusResp->operationState ) ) {
+      if ($this->checkOperationRunning($TGetOperationStatusResp->operationState)) {
         continue;
       }
       // Query in error state
-      throw new \ThriftSQL\Exception(
-        'Hive ' . \ThriftGenerated\TOperationState::$__names[ $TGetOperationStatusResp->operationState ] . "\n" .
-        "Error Message: {$TGetOperationStatusResp->errorMessage}"
+      throw new \ThriftSQL\ThriftSQLException(
+        'Hive ' . \ThriftGenerated\TOperationState::$__names[$TGetOperationStatusResp->operationState] . ". Error Message: {$TGetOperationStatusResp->errorMessage}"
       );
-    } while ( true );
+    } while (true);
 
     // Check for errors
-    if ( \ThriftGenerated\TStatusCode::ERROR_STATUS === $this->_resp->status->statusCode ) {
-      throw new \ThriftSQL\Exception( "HIVE QUERY ERROR: {$this->_resp->status->status->errorMessage}" );
+    if (\ThriftGenerated\TStatusCode::ERROR_STATUS === $this->resp->status->statusCode) {
+      throw new \ThriftSQL\ThriftSQLException("HIVE QUERY ERROR: {$this->resp->status->status->errorMessage}");
     }
 
-    $this->_ready = true;
+    $this->ready = true;
     return $this;
   }
 
-  public function schema() {
-    if ( !$this->_ready ) {
-      throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->schema()`" );
+  public function schema()
+  {
+    if (!$this->ready) {
+      $this->wait();
     }
 
-    if (!$this->_schema) {
-      $TGetResultSetMetadataResp = $this->_client->GetResultSetMetadata(new \ThriftGenerated\TGetResultSetMetadataReq(array(
-        'operationHandle' => $this->_resp->operationHandle,
+    if (!$this->schema) {
+      $TGetResultSetMetadataResp = $this->sessionInternal->client->GetResultSetMetadata(new \ThriftGenerated\TGetResultSetMetadataReq(array(
+        'operationHandle' => $this->resp->operationHandle,
       )));
 
       $i = 0;
       foreach ($TGetResultSetMetadataResp->schema->columns as $column) {
         // $column->typeDesc->types are very complex, not useful for daily query
-        $this->_schema[$column->columnName] = $i++;
+        $this->schema[$column->columnName] = $i++;
       }
     }
-    return $this->_schema;
+    return $this->schema;
   }
 
-  public function fetch( $maxRows ) {
-    if ( !$this->_ready ) {
-      throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->fetch()`" );
+  public function fetch($maxRows)
+  {
+    if (!$this->ready) {
+      $this->wait();
     }
     try {
-      $TFetchResultsResp = $this->_client->FetchResults( new \ThriftGenerated\TFetchResultsReq( array(
-        'operationHandle' => $this->_resp->operationHandle,
+      $TFetchResultsResp = $this->sessionInternal->client->FetchResults(new \ThriftGenerated\TFetchResultsReq(array(
+        'operationHandle' => $this->resp->operationHandle,
         'maxRows' => $maxRows,
-      ) ) );
+      )));
       /**
        * NOTE: $TFetchResultsResp->hasMoreRows appears broken, it's always
        * false so one needs to keep fetching until they run out of data.
        */
-      if ( $TFetchResultsResp->results instanceof \ThriftGenerated\TRowSet && !empty( $TFetchResultsResp->results->columns ) ) {
-        return $this->_colsToRows( $TFetchResultsResp->results->columns );
+      if ($TFetchResultsResp->results instanceof \ThriftGenerated\TRowSet && !empty($TFetchResultsResp->results->columns)) {
+        return $this->colsToRows($TFetchResultsResp->results->columns);
       }
       return array();
-    } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+    } catch (ThriftSQLException $e) {
+      throw new \ThriftSQL\ThriftSQLException($e->getMessage(), $e->getCode(), $e);
     }
   }
 
-  public function close() {
-    try {
-      // Fire close operation and ignore return
-      $this->_client->CloseOperation( new \ThriftGenerated\TCloseOperationReq( array(
-        'operationHandle' => $this->_resp->operationHandle,
-      ) ) );
-    } finally {
-      return $this;
-    }
+  public function close()
+  {
+    // Fire close operation and ignore return
+    $this->sessionInternal->client->CloseOperation(new \ThriftGenerated\TCloseOperationReq(array(
+      'operationHandle' => $this->resp->operationHandle,
+    )));
   }
 
-  private function _colsToRows( $columns ) {
+  private function colsToRows($columns)
+  {
     $result = array();
-    foreach ( $columns as $col => $TColumn ) {
+    foreach ($columns as $col => $TColumn) {
       $values = array();
-      if ( !is_null( $TColumn->boolVal ) ) {
+      if (!is_null($TColumn->boolVal)) {
         $values = $TColumn->boolVal->values;
-      }
-      if ( !is_null( $TColumn->byteVal ) ) {
+      } else if (!is_null($TColumn->byteVal)) {
         $values = $TColumn->byteVal->values;
-      }
-      if ( !is_null( $TColumn->i16Val ) ) {
+      } else if (!is_null($TColumn->i16Val)) {
         $values = $TColumn->i16Val->values;
-      }
-      if ( !is_null( $TColumn->i32Val ) ) {
+      } else if (!is_null($TColumn->i32Val)) {
         $values = $TColumn->i32Val->values;
-      }
-      if ( !is_null( $TColumn->i64Val ) ) {
+      } else if (!is_null($TColumn->i64Val)) {
         $values = $TColumn->i64Val->values;
-      }
-      if ( !is_null( $TColumn->doubleVal ) ) {
+      } else if (!is_null($TColumn->doubleVal)) {
         $values = $TColumn->doubleVal->values;
-      }
-      if ( !is_null( $TColumn->stringVal ) ) {
+      } else if (!is_null($TColumn->stringVal)) {
         $values = $TColumn->stringVal->values;
-      }
-      if ( !is_null( $TColumn->binaryVal ) ) {
+      } else if (!is_null($TColumn->binaryVal)) {
         $values = $TColumn->binaryVal->values;
+      } else {
+        throw new \RuntimeException("FIXME unexpected condition. null values?");
       }
-      foreach ( $values as $row => $value ) {
-        $result[ $row ][ $col ] = $value;
+      foreach ($values as $row => $value) {
+        $result[$row][$col] = $value;
+      }
+    }
+    if ($this->resultMode == Query::RESULT_SCHEMA) {
+      foreach ($result as $k=>$v) {
+        $result[$k] = new ResultRowSchema($this->schema(), $v);
       }
     }
     return $result;
   }
 
-  private function _isOperationFinished( $state ) {
-    return ( \ThriftGenerated\TOperationState::FINISHED_STATE == $state );
+  private function checkOperationFinished($state)
+  {
+    return $state == \ThriftGenerated\TOperationState::FINISHED_STATE;
   }
 
-  private function _isOperationRunning( $state ) {
+  private function checkOperationRunning($state)
+  {
     return in_array(
       $state,
       array(

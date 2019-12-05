@@ -1,5 +1,4 @@
 <?php
-
   // Load this lib
   require_once __DIR__ . '/ThriftSQL.phar';
 
@@ -7,7 +6,7 @@
   $hive = new \ThriftSQL\Hive( 'hive.host.local', 10000, 'user', 'pass' );
   $hiveTables = $hive
     ->connect()
-    ->getIterator( 'SHOW TABLES' );
+    ->query( 'SHOW TABLES' );
 
   // Try out an Impala query via iterator object
   $impala = new \ThriftSQL\Impala( 'impala.host.local' );
@@ -15,7 +14,7 @@
     ->connect()
     ->setOption( 'REQUEST_POOL', 'php' )
     ->setOption( 'MEM_LIMIT', '256mb' )
-    ->getIterator( 'SHOW TABLES' );
+    ->query( 'SHOW TABLES' );
 
   // Execute the Hive query and iterate over the result set
   foreach( $hiveTables as $rowNum => $row ) {
