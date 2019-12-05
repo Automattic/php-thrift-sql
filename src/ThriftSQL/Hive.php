@@ -21,6 +21,11 @@ class Hive extends \ThriftSQL {
     $this->_timeout = $timeout;
   }
 
+  public function setTimeout($timeout) {
+    $this->_timeout = $timeout;
+    return $this;
+  }
+
   public function setSasl( $bool ) {
     $this->_sasl = (bool) $bool;
     return $this;

@@ -71,6 +71,10 @@ class ImpalaQuery implements \ThriftSQL\Query {
     return $this;
   }
 
+  public function schema() {
+    throw new \RuntimeException("not implemented");
+  }
+
   public function fetch( $maxRows ) {
     if ( !$this->_ready ) {
       throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->fetch()`" );

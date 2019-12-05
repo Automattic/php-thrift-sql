@@ -8,6 +8,7 @@ class HiveQuery implements \ThriftSQL\Query {
   private $_sessionHandle;
   private $_ready;
   private $_resp;
+  private $_schema;
 
   public function __construct( \ThriftGenerated\TCLIServiceIf $client, \ThriftGenerated\TSessionHandle $sessionHandle ) {
     $this->_client = $client;
@@ -77,6 +78,25 @@ class HiveQuery implements \ThriftSQL\Query {
 
     $this->_ready = true;
     return $this;
+  }
+
+  public function schema() {
+    if ( !$this->_ready ) {
+      throw new \ThriftSQL\Exception( "Query is not ready. Call `->wait()` before `->schema()`" );
+    }
+
+    if (!$this->_schema) {
+      $TGetResultSetMetadataResp = $this->_client->GetResultSetMetadata(new \ThriftGenerated\TGetResultSetMetadataReq(array(
+        'operationHandle' => $this->_resp->operationHandle,
+      )));
+
+      $i = 0;
+      foreach ($TGetResultSetMetadataResp->schema->columns as $column) {
+        // $column->typeDesc->types are very complex, not useful for daily query
+        $this->_schema[$column->columnName] = $i++;
+      }
+    }
+    return $this->_schema;
   }
 
   public function fetch( $maxRows ) {

@@ -32,4 +32,9 @@ interface Query {
    * @return self
    */
   public function close();
+
+  /**
+   * @return array
+   */
+  public function schema();
 }
