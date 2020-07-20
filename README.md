@@ -120,8 +120,16 @@ Developing & Contributing
 
 In order to rebuild this library you will need [Composer](https://getcomposer.org/) to install dev dependencies and [Apache Thrift](https://thrift.apache.org/) to compile client libraries from the Thrift interface definition files.
 
-Once dev tools are installed the phar can be rebuilt using `make`:
+Once dev tools are installed, make sure you get all git submodules:
+
+```
+$ git submodule init
+```
+
+And then the phar can be rebuilt using `make`:
 
 ```
 $ make clean && make phar
 ```
+
+NOTE: If you get a `BadMethodCallException`, it may come from any of [the reasons mentioned in the PHP doc](https://www.php.net/manual/en/phar.compressfiles.php#refsect1-phar.compressfiles-errors), or even a low soft limit on open file descriptors since `Phar::compressfiles` keeps [all files opened until it writes the compressed phar](https://github.com/netz98/n98-magerun/issues/714#issuecomment-269224969).
