@@ -1,4 +1,4 @@
-PHP ThriftSQL
+PHP ThriftSQL (Forked, unofficial, big refactor, not fully tested)
 =============
 
 The `ThriftSQL.phar` archive aims to provide access to SQL-on-Hadoop frameworks for PHP. It bundles Thrift and various service packages together and exposes a common interface for running queries over the various frameworks.

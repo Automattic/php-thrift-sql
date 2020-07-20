@@ -2,102 +2,133 @@
 
 namespace ThriftSQL;
 
-class Hive extends \ThriftSQL {
-  private $_host;
-  private $_port;
-  private $_username;
-  private $_password;
-  private $_timeout;
-  private $_transport;
-  private $_client;
-  private $_sessionHandle;
-  protected $_sasl = true;
+class HiveSessionInternal
+{
+  /** @var \ThriftGenerated\TCLIServiceClient */
+  public $client;
+  /** @var \ThriftGenerated\TSessionHandle */
+  public $session;
+}
 
-  public function __construct( $host, $port = 10000, $username = null, $password = null, $timeout = null ) {
-    $this->_host = $host;
-    $this->_port = $port;
-    $this->_username = $username;
-    $this->_password = $password;
-    $this->_timeout = $timeout;
+class Hive extends \ThriftSQL
+{
+  private $host;
+  private $port;
+  private $username;
+  private $password;
+  private $timeout;
+  private $useSasl = true;
+  protected $resultMode = 0;
+
+
+  /** @var \Thrift\Transport\TSocket|\Thrift\Transport\TSaslClientTransport */
+  private $transport;
+
+  /** @var HiveSessionInternal */
+  private $sessionInternal;
+
+
+  public function __construct($host, $port = 10000, $username = null, $password = null)
+  {
+    $this->host = $host;
+    $this->port = $port;
+    $this->username = $username;
+    $this->password = $password;
+    $this->sessionInternal = new HiveSessionInternal();
   }
 
-  public function setSasl( $bool ) {
-    $this->_sasl = (bool) $bool;
+  public function setTimeout($timeout)
+  {
+    $this->timeout = $timeout;
     return $this;
   }
 
-  public function connect() {
+  public function setUseSasl($bool)
+  {
+    $this->useSasl = (bool)$bool;
+    return $this;
+  }
+
+  public function enableResultSchema()
+  {
+    $this->resultMode = Query::RESULT_SCHEMA;
+    return $this;
+  }
+
+  public function connect()
+  {
     // Check if we have already connected and have a session
-    if ( null !== $this->_sessionHandle ) {
+    if ($this->sessionInternal->session) {
       return $this;
     }
 
     // Make sure we have auth info set
-    if ( empty( $this->_username ) ) {
-      $this->_username = self::USERNAME_DEFAULT;
+    if (empty($this->username)) {
+      $this->username = self::USERNAME_DEFAULT;
     }
-    if ( empty( $this->_password ) ) {
-      $this->_password = 'ANY-PASSWORD';
+
+    if (empty($this->password)) {
+      $this->password = 'ANY-PASSWORD';
     }
 
     try {
-      $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
-      if ( null !== $this->_timeout ) {
-        $this->_transport->setSendTimeout( $this->_timeout * 1000 );
-        $this->_transport->setRecvTimeout( $this->_timeout * 1000 );
+      $this->transport = new \Thrift\Transport\TSocket($this->host, $this->port);
+      if (null !== $this->timeout) {
+        $this->transport->setSendTimeout($this->timeout * 1000);
+        $this->transport->setRecvTimeout($this->timeout * 1000);
       }
-      if ( $this->_sasl ) {
-        $this->_transport = new \Thrift\Transport\TSaslClientTransport(
-          $this->_transport,
-          $this->_username,
-          $this->_password
+      if ($this->useSasl) {
+        $this->transport = new \Thrift\Transport\TSaslClientTransport(
+          $this->transport,
+          $this->username,
+          $this->password
         );
       }
-      $this->_transport->open();
-      $this->_client = new \ThriftGenerated\TCLIServiceClient(
+      $this->transport->open();
+      $this->sessionInternal->client = new \ThriftGenerated\TCLIServiceClient(
         new \Thrift\Protocol\TBinaryProtocol(
-          $this->_transport
+          $this->transport
         )
       );
       $TOpenSessionReq = new \ThriftGenerated\TOpenSessionReq();
-      $TOpenSessionReq->username = $this->_username;
-      $TOpenSessionReq->password = $this->_password;
+      $TOpenSessionReq->username = $this->username;
+      $TOpenSessionReq->password = $this->password;
 
       // Ok, let's try to start a session
-      $this->_sessionHandle = $this
-        ->_client
-        ->OpenSession( $TOpenSessionReq )
-        ->sessionHandle;
-    } catch( Exception $e ) {
-      $this->_sessionHandle = null;
-      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+      $this->sessionInternal->session = $this->sessionInternal->client->OpenSession($TOpenSessionReq)->sessionHandle;
+    } catch (\Thrift\Exception\TException $e) {
+      $this->sessionInternal->session = null;
+      throw new \ThriftSQL\ThriftSQLException($e->getMessage(), $e->getCode(), $e);
     }
     return $this;
   }
 
-  public function query( $queryStr ) {
-    try {
-      $query = new HiveQuery( $this->_client, $this->_sessionHandle );
-      return $query->exec( $queryStr );
-    } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
-    }
+  /**
+   * @param string $statement
+   * @return HiveQuery
+   */
+  public function query($statement)
+  {
+    $query = new HiveQuery($this->sessionInternal, $statement);
+    $query->setResultMode($this->resultMode);
+    $query->exec();
+    return $query;
   }
 
-  public function disconnect() {
+  public function disconnect()
+  {
     // Close session if we have one
-    if ( null !== $this->_sessionHandle ) {
-      $this->_client->CloseSession( new \ThriftGenerated\TCloseSessionReq( array(
-        'sessionHandle' => $this->_sessionHandle,
-      ) ) );
+    if ($this->sessionInternal->session) {
+      $this->sessionInternal->client->CloseSession(new \ThriftGenerated\TCloseSessionReq(array(
+        'sessionHandle' => $this->sessionInternal->session,
+      )));
     }
-    $this->_sessionHandle = null;
-    // Clear out the client
-    $this->_client = null;
+    $this->sessionInternal->client = null;
+    $this->sessionInternal->session = null;
     // Close the socket
-    if ( null !== $this->_transport ) {
-      $this->_transport->close();
+    if (null !== $this->transport) {
+      $this->transport->close();
     }
-    $this->_transport = null;
+    $this->transport = null;
   }
 }

@@ -2,99 +2,128 @@
 
 namespace ThriftSQL;
 
-class Impala extends \ThriftSQL {
+class ImpalaClientInternal
+{
+  /** @var string */
+  public $username;
 
-  private $_host;
-  private $_port;
-  private $_username;
-  private $_password;
-  private $_timeout;
-  private $_options;
-  private $_transport;
-  private $_client;
+  /** @var array */
+  public $options;
 
-  public function __construct( $host, $port = 21000, $username = null, $password = null, $timeout = null ) {
-    $this->_host = $host;
-    $this->_port = $port;
-    $this->_username = $username;
-    $this->_password = $password; // not used -- we impersonate on the query level
-    $this->_timeout = $timeout;
-    $this->_options = array();
+  /** @var \ThriftGenerated\ImpalaServiceIf */
+  public $client;
+}
+
+class Impala extends \ThriftSQL
+{
+
+  private $host;
+  private $port;
+  private $username;
+  private $password;
+  private $timeout;
+
+  /** @var \Thrift\Transport\TSocket */
+  private $transport;
+
+  /** @var ImpalaClientInternal */
+  private $clientInternal;
+
+  public function __construct($host, $port = 21000, $username = null, $password = null)
+  {
+    $this->host = $host;
+    $this->port = $port;
+    $this->username = $username;
+    $this->password = $password; // not used -- we impersonate on the query level
+
+    $this->clientInternal = new ImpalaClientInternal();
+    $this->clientInternal->username = $username;
   }
 
-  public function setOption( $key, $value ) {
-    // Normalize key
-    $key = strtoupper( $key );
+  public function setTimeout($timeout)
+  {
+    $this->timeout = $timeout;
+    return $this;
+  }
 
-    if ( null === $value ) {
+  public function setOption($key, $value)
+  {
+    // Normalize key
+    $key = strtoupper($key);
+
+    if (null === $value) {
       // NULL means unset
-      unset( $this->_options[ $key ] );
-    } elseif ( true === $value ) {
-      $this->_options[ $key ] = 'true';
-    } elseif ( false === $value ) {
-      $this->_options[ $key ] = 'false';
+      unset($this->clientInternal->options[$key]);
+    } elseif (true === $value) {
+      $this->clientInternal->options[$key] = 'true';
+    } elseif (false === $value) {
+      $this->clientInternal->options[$key] = 'false';
     } else {
-      $this->_options[ $key ] = (string) $value;
+      $this->clientInternal->options[$key] = (string)$value;
     }
 
     return $this;
   }
 
-  public function connect() {
+  public function connect()
+  {
     // Check if we have already connected
-    if ( null !== $this->_client ) {
+    if (null !== $this->clientInternal->client) {
       return $this;
     }
 
     // Make sure we have a username set
-    if ( empty( $this->_username ) ) {
-      $this->_username = self::USERNAME_DEFAULT;
+    if (empty($this->username)) {
+      $this->username = self::USERNAME_DEFAULT;
     }
 
     try {
-      $this->_transport = new \Thrift\Transport\TSocket( $this->_host, $this->_port );
+      $this->transport = new \Thrift\Transport\TSocket($this->host, $this->port);
 
-      if ( null !== $this->_timeout ) {
-        $this->_transport->setSendTimeout( $this->_timeout * 1000 );
-        $this->_transport->setRecvTimeout( $this->_timeout * 1000 );
+      if (null !== $this->timeout) {
+        $this->transport->setSendTimeout($this->timeout * 1000);
+        $this->transport->setRecvTimeout($this->timeout * 1000);
       }
 
-      $this->_transport->open();
+      $this->transport->open();
 
-      $this->_client = new \ThriftGenerated\ImpalaServiceClient(
+      $this->clientInternal->client = new \ThriftGenerated\ImpalaServiceClient(
         new \Thrift\Protocol\TBinaryProtocol(
-          $this->_transport
+          $this->transport
         )
       );
-    } catch( Exception $e ) {
-      $this->_client = null;
-      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+    } catch (\Thrift\Exception\TException $e) {
+      $this->clientInternal->client = null;
+      throw new \ThriftSQL\ThriftSQLException($e->getMessage(), $e->getCode(), $e);
     }
 
     return $this;
   }
 
-  public function query( $queryStr ) {
+  public function query($statement)
+  {
     try {
       $options = array();
-      foreach ( $this->_options as $key => $value ) {
+      foreach ($this->clientInternal->options as $key => $value) {
         $options[] = "{$key}={$value}";
       }
-      $query = new ImpalaQuery( $this->_username, $options, $this->_client );
-      return $query->exec( $queryStr );
-    } catch ( Exception $e ) {
-      throw new \ThriftSQL\Exception( $e->getMessage(), $e->getCode(), $e );
+      $query = new ImpalaQuery($this->clientInternal, $statement);
+      $query->exec();
+      return $query;
+    } catch (ThriftSQLException $e) {
+      throw new \ThriftSQL\ThriftSQLException($e->getMessage(), $e->getCode(), $e);
     }
   }
 
-  public function disconnect() {
+  public function disconnect()
+  {
     // Clear out the client
-    $this->_client = null;
+    $this->clientInternal->client = null;
 
     // Close the socket
-    if ( null !== $this->_transport ) {
-      $this->_transport->close();
+    if (null !== $this->transport) {
+      $this->transport->close();
     }
-    $this->_transport = null;
+    $this->transport = null;
   }
 }

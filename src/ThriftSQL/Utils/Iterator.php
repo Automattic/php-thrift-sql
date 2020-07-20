@@ -1,111 +1,104 @@
 <?php
-
 namespace ThriftSQL\Utils;
 
-class Iterator implements \Iterator {
-
+class Iterator implements \Iterator
+{
   const BUFFER_ROWS = 64;
 
-  /**
-   * @var \ThriftSQL
-   */
-  private $thriftSQL;
+  /** @var \ThriftSQL\Query */
+  private $query;
 
-  /**
-   * @var \ThriftSQL\Query
-   */
-  private $thriftSQLQuery;
-
-  private $queryStr;
   private $buffer;
   private $location;
 
-  private $runCount = 0;
-  private $allowRerun = false;
+  private $queryCount = 0;
+  private $rewindCount = 0;
 
-  public function __construct( \ThriftSQL $thriftSQL, $queryStr ) {
-    $this->thriftSQL = $thriftSQL;
-    $this->queryStr = $queryStr;
+  public function __construct(\ThriftSQL\Query $query)
+  {
+    $this->query = $query;
+    $this->doQuery();
   }
 
-  public function allowRerun( $value ) {
-    $this->allowRerun = (bool) $value;
-    return $this;
+  private function doQuery()
+  {
+    $this->queryCount++;
+    $this->buffer = array();
+    $this->location = 0;
+    $this->query->exec();
+  }
+
+  public function schema()
+  {
+    return $this->query->schema();
   }
 
   /**
-   * Return the current element
-   * @link http://php.net/manual/en/iterator.current.php
-   * @return mixed Can return any type.
-   * @since 5.0.0
+   * @return array|object|\ThriftSQL\ResultRowSchema
    */
-  public function current() {
+  public function current()
+  {
     return $this->buffer[0];
   }
 
   /**
    * Move forward to next element
-   * @link http://php.net/manual/en/iterator.next.php
    * @return void Any returned value is ignored.
-   * @since 5.0.0
    */
-  public function next() {
+  public function next()
+  {
     $this->location++;
-    array_shift( $this->buffer );
+    array_shift($this->buffer);
   }
 
   /**
    * Return the key of the current element
-   * @link http://php.net/manual/en/iterator.key.php
    * @return mixed scalar on success, or null on failure.
-   * @since 5.0.0
    */
-  public function key() {
+  public function key()
+  {
     return $this->location;
   }
 
   /**
    * Checks if current position is valid
-   * @link http://php.net/manual/en/iterator.valid.php
    * @return boolean The return value will be casted to boolean and then evaluated.
-   * Returns true on success or false on failure.
-   * @since 5.0.0
+   *         Returns true on success or false on failure.
+   * @throws \ThriftSQL\ThriftSQLException
    */
-  public function valid() {
-    if ( ! empty( $this->buffer ) ) {
+  public function valid()
+  {
+    if (!empty($this->buffer)) {
       return true;
     }
 
     // Buffer is empty let's refill it
-    $this->buffer = $this->thriftSQLQuery->fetch( self::BUFFER_ROWS );
+    $this->buffer = $this->query->fetch(self::BUFFER_ROWS);
 
     // Buffer is full again!
-    if ( ! empty( $this->buffer ) ) {
+    if (!empty($this->buffer)) {
       return true;
     }
 
-    $this->thriftSQLQuery->close();
+    $this->query->close();
     return false;
   }
 
   /**
    * Rewind the Iterator to the first element
-   * @link http://php.net/manual/en/iterator.rewind.php
    * @return void Any returned value is ignored.
-   * @since 5.0.0
-   * @throws \ThriftSQL\Exception
+   * @throws \ThriftSQL\ThriftSQLException
    */
-  public function rewind() {
-    if ( $this->runCount > 0 && !$this->allowRerun ) {
-      throw new \ThriftSQL\Exception(
-        'Iterator rewound, this will cause the ThriftSQL to execute again. ' .
-        'Set `' . __CLASS__ . '::allowRerun(true)` to allow this behavior.'
-      );
+  public function rewind()
+  {
+    if ($this->rewindCount > 0) {
+      throw new \ThriftSQL\ThriftSQLException('Query already executed.');
     }
-    $this->runCount++;
 
-    $this->buffer = array();
-    $this->location = 0;
-    $this->thriftSQLQuery = $this->thriftSQL->query( $this->queryStr )->wait();
+    $this->rewindCount++;
+    if ($this->rewindCount > $this->queryCount) {
+      $this->doQuery();
+    }
+    $this->query->wait();
   }
 }
